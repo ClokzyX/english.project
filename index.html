@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="English Project — interactive English trainer.">
+<meta name="theme-color" content="#f7faff">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+<title>English Project — Trainer</title>
+<style>
+:root{color-scheme:light;--tx:#1e293b;--mut:#64748b;--pri:#4f8cff;--ok:#22c55e;--bad:#ef4444;--ln:#e6ecf7;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body{margin:0}
+body{color:var(--tx);font:16px/1.5 "Nunito","Segoe UI",system-ui,sans-serif;background:#f7faff}
+body::before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(rgba(148,163,184,.38) 1px,transparent 1.3px) 0 0/24px 24px,radial-gradient(900px 600px at 5% -5%,#d9ebff,transparent),radial-gradient(800px 600px at 100% 0,#ffe1ef,transparent),radial-gradient(800px 700px at 60% 70%,#e9e2ff,transparent),#f7faff}
+button{font-family:inherit;color:inherit}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:grid;grid-template-columns:1fr auto 1fr;gap:8px 16px;align-items:center;padding:12px 22px;background:rgba(255,255,255,.7);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.7)}
+.logo{font-weight:900;font-size:21px;cursor:pointer;display:flex;align-items:center;gap:8px;background:none;border:0;padding:0;color:inherit;font-family:inherit}.logo span{background:linear-gradient(90deg,#4f8cff,#a06bff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.header-actions{display:flex;justify-content:flex-end;align-items:center;gap:8px;padding-right:4px}
+.xp{font-weight:900;color:#b45309;background:#fff7e0;padding:5px 12px;border-radius:20px;font-size:13px;white-space:nowrap}
+.lang-switch{display:flex;background:rgba(226,232,240,.6);border-radius:12px;padding:2px;cursor:pointer}
+.lang-btn{border:0;background:none;padding:4px 8px;border-radius:10px;font-weight:800;font-size:12px;color:var(--mut);cursor:pointer;transition:all .2s}
+.lang-btn.on{background:#fff;color:var(--tx);box-shadow:0 2px 6px rgba(0,0,0,.1)}
+main{max-width:1040px;margin:0 auto;padding:10px 16px 80px}
+.glass{background:rgba(255,255,255,.8);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.6);border-radius:24px;box-shadow:0 20px 40px -8px rgba(148,163,184,.3)}
+.blob{position:fixed;border-radius:50%;opacity:.9;z-index:-1;pointer-events:none}
+.spot{position:fixed;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(280px circle at var(--mx,50%) var(--my,30%),rgba(79,140,255,.14),transparent 70%)}
+.pr{display:block}.pl{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:860px){.pl{grid-template-columns:1fr}}
+.zone{min-height:72px;border:2px dashed #cbd5e1;border-radius:16px;padding:8px;margin-bottom:12px;display:flex;flex-wrap:wrap;align-items:center}.zone.ok{border-color:#22c55e}.zone.no{border-color:#ef4444}.zone em{color:#94a3b8;padding:0 8px;font-style:normal}
+.chat{height:340px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}.bb{max-width:82%;padding:10px 14px;border-radius:18px;font-weight:700}.bb.bot{background:#fff;align-self:flex-start;border-bottom-left-radius:4px;border:1px solid #f1f5f9}.bb.me{background:linear-gradient(135deg,#4f8cff,#7c5cff);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.cp{border:0;background:rgba(226,232,240,.6);border-radius:20px;padding:6px 14px;font-weight:800;font-size:13px;color:var(--mut);cursor:pointer}.cp.on{background:#fff;color:var(--tx);box-shadow:0 3px 10px rgba(148,163,184,.4)}.pp.cl{cursor:pointer;border:1px solid var(--ln);font-family:inherit}
+.vg{display:grid;grid-template-columns:3fr 2fr;gap:16px;align-items:start}@media(max-width:860px){.vg{grid-template-columns:1fr}}
+input.tok{border-color:#22c55e;background:#dcfce7}input.tno{border-color:#ef4444;background:#fee2e2}
+.vt thead th{position:sticky;top:0;background:rgba(255,255,255,.95)}
+.hero{position:relative;text-align:center;padding:90px 0 80px;min-height:520px}
+.hero h1{position:relative;z-index:2;font-size:clamp(38px,7vw,74px);line-height:1.06;margin:0 auto 18px;max-width:700px;font-weight:900;letter-spacing:-.03em}
+.hero h1 span{display:inline-block;margin:0 .04em}.grad{background:linear-gradient(90deg,#4f8cff,#ff6fb1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{position:relative;z-index:2;max-width:520px;margin:0 auto 28px;color:var(--mut);font-size:18px}
+.cta{position:relative;z-index:2;border:0;cursor:pointer;color:#fff;font-weight:900;font-size:18px;padding:18px 46px;border-radius:18px;background:linear-gradient(135deg,#3b82f6,#7c5cff);box-shadow:0 12px 28px rgba(79,140,255,.45);font-family:inherit}
+.link{position:relative;z-index:2;display:inline-block;margin-top:20px;color:var(--pri);font-weight:800;cursor:pointer;background:none;border:0;padding:0;font-family:inherit;font-size:inherit;background:linear-gradient(var(--pri),var(--pri)) 0 100%/0 2px no-repeat;transition:background-size .3s}.link:hover{background-size:100% 2px}
+.fl{position:absolute;z-index:1;padding:10px 18px;text-align:left;border-radius:16px;display:none}.fl b{display:block}.fl small{color:var(--mut)}
+@media(min-width:960px){.fl{display:block}}
+.h2{font-size:clamp(26px,4.5vw,36px);font-weight:900;text-align:center;margin:70px 0 6px;letter-spacing:-.02em}.hp{text-align:center;color:var(--mut);margin:0 0 26px}
+.bento{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.s2{grid-column:span 2}.s4{grid-column:span 4}
+@media(max-width:700px){.bento{grid-template-columns:1fr 1fr}.s4{grid-column:span 2}}
+.bc{padding:22px;height:100%}.bc .e{font-size:34px}.bc h3{margin:6px 0 4px}.bc p{margin:0;color:var(--mut);font-size:15px}
+.stp{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;font-weight:800}.stp span{background:rgba(255,255,255,.9);border-radius:30px;padding:8px 16px}.stp i{font-style:normal;color:var(--pri)}
+.wg{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:700px){.wg{grid-template-columns:1fr}}
+.flipw{perspective:900px;height:150px;margin:12px 0;cursor:pointer;outline:none}.flipw:focus-visible{outline:3px solid var(--pri);outline-offset:4px;border-radius:20px}.flipi{position:relative;height:100%;transform-style:preserve-3d}
+.ff{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:grid;place-items:center;font-size:30px;font-weight:900;border-radius:20px;color:#fff;background:linear-gradient(135deg,#60a5fa,#a78bfa)}.ff.bk{transform:rotateY(180deg);background:linear-gradient(135deg,#fb90c0,#fdba74)}
+.chip{border:2px solid var(--ln);border-bottom-width:4px;background:#fff;border-radius:12px;padding:8px 12px;margin:4px;font-weight:700;font-size:16px;font-family:inherit;cursor:pointer}
+.btn{display:inline-block;border:0;border-radius:14px;padding:13px 26px;font-weight:800;font-size:16px;color:#fff;background:linear-gradient(135deg,#4f8cff,#6d7cff);box-shadow:0 8px 20px rgba(79,140,255,.35);cursor:pointer;font-family:inherit}.btn:disabled{opacity:.5;cursor:not-allowed}.btn.g{background:linear-gradient(135deg,#22c55e,#16a34a);box-shadow:0 8px 20px rgba(34,197,94,.35)}.btn.n{background:linear-gradient(135deg,#f87171,#ef4444);box-shadow:0 8px 20px rgba(239,68,68,.35)}.btn.w{width:100%}.btn.t{background:none;color:var(--mut);box-shadow:none}
+.dash{padding:18px}.tabs{display:flex;gap:4px;background:rgba(226,232,240,.55);border-radius:40px;padding:5px;width:max-content;max-width:100%;margin:0 auto 20px;overflow-x:auto}
+.tab{position:relative;border:0;background:none;padding:10px 20px;border-radius:30px;font-weight:800;font-size:15px;color:var(--mut);cursor:pointer;white-space:nowrap;font-family:inherit}.tab.on{color:var(--tx)}
+.pill{position:absolute;inset:0;border-radius:30px;background:#fff;box-shadow:0 4px 14px rgba(148,163,184,.4)}.tl{position:relative;display:flex;gap:7px;align-items:center}
+.pc{padding:26px;border-radius:22px;background:rgba(255,255,255,.75)}.pc h2{margin:0 0 4px;font-size:26px}.pc p{margin:0 0 16px;color:var(--mut)}
+.glow{height:16px;border-radius:9px;background:#e8eefb;overflow:hidden}.glow>div{height:100%;border-radius:9px;background:linear-gradient(90deg,#7dd3fc,#a5b4fc,#f9a8d4);box-shadow:0 0 18px rgba(165,180,252,.9)}
+.sts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.st{background:#fff;border-radius:16px;padding:12px;text-align:center;font-weight:800;color:var(--mut);font-size:13px}.st b{display:block;font-size:26px;color:var(--pri)}
+.gh{font-weight:900;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin:18px 4px 10px}
+.gg{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.lc{position:relative;text-align:left;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.85);border-radius:20px;padding:18px;cursor:pointer;box-shadow:0 8px 22px rgba(148,163,184,.2);font-family:inherit}.lc .em{font-size:32px;display:block}.lc h4{margin:6px 0 2px;font-size:17px}.lc small{color:var(--mut);font-weight:700}
+.lc.dn{background:linear-gradient(160deg,#fff,#e8fbf0)}.lc.lk{background:rgba(226,232,240,.45);cursor:not-allowed;color:#94a3b8}.lc.lk .em{opacity:.5}.lock{position:absolute;top:14px;right:14px;color:#94a3b8}
+.vc{background:rgba(255,255,255,.85);border-radius:20px;padding:18px;margin-bottom:14px}.vc h4{margin:0;font-size:18px}
+.wl{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 14px}.wd{background:#f1f5fd;border-radius:12px;padding:6px 12px;font-size:14px;cursor:default;display:inline-flex;align-items:center;overflow:hidden}.wd:hover{background:#fff;box-shadow:0 8px 18px rgba(79,140,255,.25)}
+.wd i{font-style:normal;color:var(--pri);max-width:0;opacity:0;margin-left:0;white-space:nowrap;transition:max-width .35s ease,opacity .35s ease,margin .35s ease}.wd:hover i{max-width:200px;opacity:1;margin-left:8px}@media(hover:none){.wd i{max-width:200px;opacity:1;margin-left:8px}}
+.card{max-width:620px;margin:30px auto 16px;padding:24px}.card h2{margin:0 0 10px}.r{background:#f1f6ff;border-left:4px solid var(--pri);padding:8px 12px;border-radius:8px;margin:8px 0}
+.wrap{max-width:620px;margin:20px auto}.top{display:flex;align-items:center;gap:12px;margin-bottom:24px}.top .glow{flex:1}.x{background:none;border:0;font-size:22px;color:var(--mut);cursor:pointer}
+.q{font-size:22px;font-weight:800;margin:10px 0 20px}.opts{display:grid;gap:10px;margin-bottom:20px}
+.opt{background:#fff;border:2px solid var(--ln);border-bottom-width:4px;border-radius:14px;padding:13px;font-weight:700;font-size:17px;font-family:inherit;cursor:pointer}.opt.sel{border-color:var(--pri);background:#eef4ff}.opt.good{border-color:var(--ok);background:#dcfce7}.opt.bad{border-color:var(--bad);background:#fee2e2}
+input.t{width:100%;font-weight:700;font-size:18px;font-family:inherit;padding:14px;border-radius:14px;border:2px solid var(--ln);background:#fff;outline:0;margin-bottom:20px;color:#1e293b;-webkit-text-fill-color:#1e293b;caret-color:#4f8cff}input.t:focus{border-color:var(--pri)}input.t::placeholder{color:#94a3b8;-webkit-text-fill-color:#94a3b8}
+.fb{position:fixed;left:0;right:0;bottom:0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));z-index:30}.fb.ok{background:#dcfce7}.fb.no{background:#fee2e2}.fb>div{max-width:588px;margin:0 auto}.fb b{display:block;font-size:19px;margin-bottom:10px}
+.stars{font-size:54px;letter-spacing:6px}.big{font-size:44px;font-weight:900;color:var(--pri)}
+.nav{display:flex;gap:2px;background:rgba(226,232,240,.5);border-radius:40px;padding:4px;overflow-x:auto;max-width:100%}
+.nv{position:relative;border:0;background:none;padding:8px 14px;border-radius:30px;font-weight:800;font-size:14px;color:var(--mut);cursor:pointer;white-space:nowrap;font-family:inherit}.nv.on{color:var(--tx)}
+.nvp{position:absolute;inset:0;border-radius:30px;background:#fff;box-shadow:0 4px 12px rgba(148,163,184,.4)}
+@media(max-width:820px){header{grid-template-columns:1fr}.nav{justify-self:center}.logo{justify-content:center}}
+.pg{padding-top:34px}.pt{font-size:clamp(28px,5vw,40px);font-weight:900;margin:0 0 4px;letter-spacing:-.02em}.ps{color:var(--mut);margin:0 0 22px}
+.cc{padding:20px;margin-bottom:14px}.cc h3{margin:0 0 12px}.ph{display:flex;flex-wrap:wrap;gap:8px}
+.pp{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:6px 12px;font-size:14px;transition:transform .2s,box-shadow .2s,border-color .2s;cursor:default}.pp:hover{transform:translateY(-3px);border-color:var(--pri);box-shadow:0 8px 18px rgba(79,140,255,.22)}
+.tip{background:#fff7e0;border-radius:16px;padding:12px 16px;margin-bottom:16px;font-weight:700;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.ln{margin:8px 0;padding:10px 14px;border-radius:14px;background:#fff}.ln b{color:var(--pri);margin-right:8px}
+.vt{width:100%;border-collapse:collapse;min-width:520px}.vt th{text-align:left;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#64748b;padding:10px 12px}.vt td{padding:10px 12px;border-top:1px solid var(--ln)}.vt tr:hover td{background:#eef4ff}.vt td:nth-child(2){font-weight:800;color:var(--pri)}
+.sr{width:100%;font-weight:700;font-size:16px;font-family:inherit;padding:12px 16px;border-radius:14px;border:2px solid var(--ln);background:#fff;outline:0;margin-bottom:14px;color:#1e293b}.sr:focus{border-color:var(--pri)}
+.opt{font-size:18px;padding:16px}
+.lv{min-height:calc(100vh - 130px);display:flex;flex-direction:column;justify-content:center;padding:10px 0}.lv>div{width:100%}
+.qcard{background:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.7);border-radius:28px;padding:30px 32px;box-shadow:0 20px 44px -8px rgba(148,163,184,.3)}.q{font-size:26px}
+.av{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:900;font-size:18px;box-shadow:0 8px 18px rgba(99,120,180,.3);object-fit:cover;object-position:center}.av.big{width:88px;height:88px;border:3px solid #fff;font-size:26px}.av.sm{width:34px;height:34px;box-shadow:none;font-size:16px;flex:none;object-fit:cover}
+.ai{display:flex;gap:10px;align-items:center;max-width:540px;margin:18px auto 0;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.6);font-size:13px;color:#64748b}.ai p{margin:0}
+@media(max-width:700px){.glass{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+.fl{min-width:140px}
+.toolgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}
+.toolpanel{padding:22px;margin:16px 0}
+.choice{display:block;width:100%;text-align:left;border:1px solid #e2e8f0;background:#fff;border-radius:13px;padding:12px 14px;margin:8px 0;cursor:pointer;font-weight:700;font-family:inherit;font-size:15px}.choice.good{border-color:#22c55e;background:#ecfdf5;color:#15803d}.choice.bad{border-color:#ef4444;background:#fff1f2;color:#b91c1c}
+.pairgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pairbtn{border:1px solid #dbe5f5;border-radius:12px;padding:12px;background:#fff;font-weight:800;cursor:pointer;min-height:48px;font-family:inherit;font-size:14px}.pairbtn.sel{background:#eaf2ff;border-color:#4f8cff;color:#2563eb}.pairbtn.done{background:#ecfdf5;border-color:#86efac;color:#15803d;opacity:.75}
+.rings{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}.ringcard{text-align:center;padding:14px 8px;background:rgba(255,255,255,.8);border-radius:17px}.ring{width:76px;height:76px;border-radius:50%;margin:0 auto 8px;display:grid;place-items:center;background:conic-gradient(#4f8cff var(--pct),#e7eef9 0);position:relative}.ring:before{content:"";position:absolute;inset:7px;border-radius:50%;background:#fff}.ring b{position:relative;font-size:17px}.ringcard small{color:var(--mut);font-weight:800;display:block}
+.bottomnav{display:none}
+.iconbtn{border:1px solid #dbe3f1;background:#fff;border-radius:12px;padding:8px 14px;font-weight:800;font-size:14px;color:var(--mut);cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+
+/* ================= ПРАВИЛА ================= */
+.rules-header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+.rules-title h2 { margin: 0 0 4px; font-size: clamp(28px, 5vw, 40px); font-weight: 900; letter-spacing: -.02em; }
+.rules-title p { margin: 0; color: var(--mut); }
+.rl { display: grid; grid-template-columns: 260px 1fr; gap: 24px; align-items: start; }
+@media(max-width: 860px) { .rl { grid-template-columns: 1fr; } }
+.rn { position: sticky; top: 90px; background: rgba(255,255,255,.6); backdrop-filter: blur(10px); border-radius: 20px; padding: 16px; border: 1px solid rgba(255,255,255,.8); }
+.rg { margin-bottom: 20px; }
+.rg:last-child { margin-bottom: 0; }
+.gh { font-weight: 900; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #94a3b8; margin: 0 0 10px 8px; }
+.rb { position: relative; display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 0; background: none; padding: 10px 14px; border-radius: 12px; font-weight: 800; font-size: 15px; color: var(--mut); cursor: pointer; font-family: inherit; transition: color 0.2s; }
+.rb:hover { color: var(--tx); background: rgba(255,255,255,0.5); }
+.rb.on { color: var(--tx); }
+.rbp { position: absolute; inset: 0; border-radius: 12px; background: #fff; box-shadow: 0 4px 12px rgba(148,163,184,.2); z-index: 0; }
+.rbt { position: relative; z-index: 1; display: flex; align-items: center; gap: 8px; }
+@media(max-width: 860px) { .rn { position: static; display: flex; gap: 12px; overflow-x: auto; padding: 12px; } .rn .gh { display: none; } .rg { display: flex; gap: 6px; margin-bottom: 0; } .rb { white-space: nowrap; width: auto; } }
+.rc-container { background: rgba(255,255,255,.85); border-radius: 24px; padding: 32px; box-shadow: 0 10px 30px -8px rgba(148,163,184,.2); border: 1px solid rgba(255,255,255,.9); }
+.rc-title { display: flex; align-items: center; gap: 12px; font-size: 28px; font-weight: 900; margin: 0 0 24px; padding-bottom: 16px; border-bottom: 2px solid #f1f5f9; }
+.rc-title span { font-size: 32px; }
+.rs { margin-bottom: 32px; }
+.rs:last-child { margin-bottom: 0; }
+.rh { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 18px; margin-bottom: 12px; color: #1e293b; }
+.rh b { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #4f8cff, #a06bff); color: #fff; display: grid; place-items: center; font-size: 14px; flex: none; }
+.rs p { margin: 0 0 16px; color: #475569; font-size: 16px; line-height: 1.6; }
+.rx { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 18px; margin: 10px 0; transition: all 0.2s ease; }
+.rx:hover { background: #fff; border-color: #cbd5e1; box-shadow: 0 6px 16px rgba(148,163,184,.12); transform: translateY(-2px); }
+.rx span { font-weight: 800; color: #1e293b; font-size: 16px; }
+.rx i { font-style: normal; color: #64748b; font-size: 15px; text-align: right; }
+@media(max-width: 600px) { .rx { grid-template-columns: 1fr; gap: 6px; } .rx i { text-align: left; } .rc-container { padding: 20px; } }
+
+/* ================= О ПРОЕКТЕ ================= */
+.team-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 24px; }
+@media(max-width: 800px) { .team-grid { grid-template-columns: 1fr; } }
+.team-card { position: relative; background: rgba(255,255,255,.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,.9); border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 16px; transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden; }
+.team-card:hover { transform: translateY(-5px) scale(1.01); box-shadow: 0 20px 40px -10px rgba(79,140,255,.25); }
+.team-card.lead { grid-column: 1 / -1; background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(240,246,255,0.85)); flex-direction: row; align-items: center; }
+@media(max-width: 800px) { .team-card.lead { flex-direction: column; align-items: flex-start; } }
+.team-photo-wrap { position: relative; flex-shrink: 0; }
+.team-photo { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.1); filter: contrast(1.05) saturate(1.1); }
+.team-card.lead .team-photo { width: 130px; height: 130px; }
+.team-info { flex: 1; }
+.team-info h3 { margin: 0 0 4px; font-size: 20px; }
+.team-info .role { color: #4f8cff; font-weight: 800; font-size: 14px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.team-info p { margin: 0 0 16px; color: #64748b; font-size: 15px; line-height: 1.6; }
+.team-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.team-tag { background: #edf4ff; color: #3b82f6; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 20px; }
+
+@media(max-width:700px){
+  header{display:flex;justify-content:center;padding:10px 12px}
+  .header-actions{position:absolute;right:10px;top:9px}
+  .nav{display:none!important}main{padding-bottom:100px}
+  .bottomnav{display:flex;position:fixed;z-index:50;bottom:0;left:0;right:0;padding:8px 4px calc(8px + env(safe-area-inset-bottom));background:rgba(255,255,255,.94);backdrop-filter:blur(18px);border-top:1px solid #e2e8f0;justify-content:space-around;gap:0}
+  .bottomnav button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:9px;font-weight:800;color:#64748b;padding:4px 4px;font-family:inherit;min-width:0}
+  .bottomnav button.on{color:#3978e8}
+  .toolgrid{grid-template-columns:1fr}.rings{gap:6px}.ring{width:62px;height:62px}.ringcard{font-size:12px;padding:10px 3px}.pairbtn{font-size:13px;padding:9px 6px}
+  .hero{padding:60px 0 50px;min-height:420px}
+}
+@media print{
+  header,.bottomnav,.no-print,.blob,.spot,.toolicon,.iconbtn{display:none!important}
+  body{background:#fff!important;color:#111!important}
+  .glass{box-shadow:none;border:0;background:#fff!important}
+  .toolpanel{padding:0}.ring{background:#e7eef9!important}.ring:before{display:none}.big{color:#1e293b}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<noscript><p style="padding:60px 20px;text-align:center;font-family:sans-serif">Please enable JavaScript to use the app.</p></noscript>
+<script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/framer-motion@10.18.0/dist/framer-motion.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
+<script>
+if(!window.React||!window.ReactDOM||!window.htm){document.getElementById('root').innerHTML='<p style="padding:60px 20px;text-align:center;font-family:sans-serif">Failed to load libraries. Check your internet connection.</p>';throw new Error('libs')}
+
+const IMG = {
+  gd: 'dmitry.jpg', 
+  rr: 'robert.jpg', 
+  ks: 'svyat.jpg', 
+  ai: 'claude.jpg'
+};
+
+const Svg=({size=24,color='currentColor',className,children,...r})=>React.createElement('svg',{width:size,height:size,viewBox:'0 0 24 24',fill:'none',stroke:color,strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round',className,'aria-hidden':'true',...r},children);
+const HomeIcon=(p)=>React.createElement(Svg,p,React.createElement('path',{d:'m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'}),React.createElement('polyline',{points:'9 22 9 12 15 12 15 22'}));
+const MapIcon=(p)=>React.createElement(Svg,p,React.createElement('path',{d:'M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z'}),React.createElement('path',{d:'M15 5.764v15'}),React.createElement('path',{d:'M9 3.236v15'}));
+const BookIcon=(p)=>React.createElement(Svg,p,React.createElement('path',{d:'M12 7v14'}),React.createElement('path',{d:'M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z'}));
+const GamepadIcon=(p)=>React.createElement(Svg,p,React.createElement('line',{x1:6,x2:10,y1:11,y2:11}),React.createElement('line',{x1:8,x2:8,y1:9,y2:13}),React.createElement('line',{x1:15,x2:15.01,y1:12,y2:12}),React.createElement('line',{x1:18,x2:18.01,y1:10,y2:10}),React.createElement('path',{d:'M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z'}));
+const MessageIcon=(p)=>React.createElement(Svg,p,React.createElement('path',{d:'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'}));
+const TrophyIcon=(p)=>React.createElement(Svg,p,React.createElement('path',{d:'M6 9H4.5a2.5 2.5 0 0 1 0-5H6'}),React.createElement('path',{d:'M18 9h1.5a2.5 2.5 0 0 0 0-5H18'}),React.createElement('path',{d:'M4 22h16'}),React.createElement('path',{d:'M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22'}),React.createElement('path',{d:'M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22'}),React.createElement('path',{d:'M18 2H6v7a6 6 0 0 0 12 0V2Z'}));
+const FlameIcon=(p)=>React.createElement(Svg,p,React.createElement('path',{d:'M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z'}));
+const ArrowIcon=(p)=>React.createElement(Svg,p,React.createElement('path',{d:'M5 12h14'}),React.createElement('path',{d:'m12 5 7 7-7 7'}));
+const LockIcon=(p)=>React.createElement(Svg,p,React.createElement('rect',{width:18,height:11,x:3,y:11,rx:2,ry:2}),React.createElement('path',{d:'M7 11V7a5 5 0 0 1 10 0v4'}));
+const CheckIcon=(p)=>React.createElement(Svg,p,React.createElement('path',{d:'M20 6 9 17l-5-5'}));
+const SkipIcon=(p)=>React.createElement(Svg,p,React.createElement('polygon',{points:'5 4 15 12 5 20 5 4'}),React.createElement('line',{x1:19,x2:19,y1:5,y2:19}));
+const SendIcon=(p)=>React.createElement(Svg,p,React.createElement('path',{d:'m22 2-7 20-4-9-9-4Z'}),React.createElement('path',{d:'M22 2 11 13'}));
+const SparklesIcon=(p)=>React.createElement(Svg,p,React.createElement('path',{d:'M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z'}));
+const ICONS={Home:HomeIcon,Map:MapIcon,BookOpen:BookIcon,Gamepad2:GamepadIcon,MessageSquare:MessageIcon,Trophy:TrophyIcon,Flame:FlameIcon,ArrowRight:ArrowIcon,Lock:LockIcon,Check:CheckIcon,Skip:SkipIcon,Send:SendIcon,Sparkles:SparklesIcon};
+
+// ---------- ЛОКАЛИЗАЦИЯ ----------
+const L = {
+  ru: {
+    nav: { home: 'Главная', path: 'Путь', rules: 'Правила', play: 'Практика', tools: 'Игры', phr: 'Фразы', verbs: 'Глаголы', report: 'Итоги' },
+    heroTitle: ['Изучай', 'английский', 'быстро', 'и', 'просто'],
+    heroSub: 'Повторяй темы триместра легко: короткие правила, понятные тесты и практика в удобном темпе.',
+    startPath: 'Начать путь', continuePath: 'Продолжить: ', viewReport: 'Смотреть результаты', tryMini: 'Сначала попробуй мини-тренажёр',
+    bentoTitle: 'Всё, что нужно для повторения', bentoSub: 'Темы триместра, собранные в одном месте',
+    aboutTitle: 'О проекте', aboutSub: 'Учебный проект по английскому языку · Тюменский государственный университет (ТюмГУ) · 2026 год',
+    dashTitle: 'Учебный путь', dashSub: 'Проходи уроки шаг за шагом',
+    passed: 'Пройдено', ofLessons: 'из', lessons: 'уроков',
+    course: 'курса', done: 'пройдено', left: 'осталось',
+    lockLessons: 'Вернуть порядок уроков', unlockAll: 'Открыть все уроки',
+    resetProgress: 'Сбросить прогресс', saveCheat: 'Сохранить шпаргалку', finalTest: 'Итоговый тест', testLocked: 'Итоговый тест откроется после всех уроков',
+    tabProgress: 'Прогресс', tabGrammar: 'Грамматика', tabVocabulary: 'Словарь',
+    locked: 'Закрыто', completed: 'Пройдено', start: 'Начать', train: 'Тренировать',
+    practice: 'Практика', practiceSub: 'Тренируйся в своём темпе: слова и предложения',
+    wordCards: 'Карточки слов', wordCardsDesc: 'Нажми на карточку, чтобы увидеть перевод',
+    buildSentence: 'Собери предложение', buildSentenceDesc: 'Слова перелетают в зону сборки',
+    tapWords: 'Нажимай на слова ниже, чтобы собрать предложение',
+    check: 'Проверить', skip: 'Пропустить', next: 'Дальше', correct: 'Верно!', almost: 'Почти, попробуй ещё',
+    listen: 'Послушать', nextWord: 'Другое слово',
+    tools: 'Игры и тренировки', toolsSub: 'Проверяй знания разными способами и закрепляй сложные темы',
+    toolBlitz: 'Блиц', toolErrors: 'Ошибки', toolFind: 'Найди ошибку', toolPairs: 'Пары',
+    timeBlitz: 'Блиц на время', blitzDesc: 'За 60 секунд ответь на максимум вопросов по грамматике и словарю.',
+    startBlitz: 'Начать блиц', playAgain: 'Ещё раз', yourAnswer: 'Твой ответ…', answer: 'Ответить', sec: 'сек.',
+    errorReview: 'Работа над ошибками', noErrors: 'Пока ошибок нет. Ошибочные ответы из тестов и блица будут автоматически собираться здесь.',
+    showAnswer: 'Показать правильный ответ', hideAnswer: 'Скрыть ответ', nextError: 'Следующая ошибка', clearList: 'Очистить список',
+    findMistake: 'Найди ошибку', findMistakeDesc: 'Исправь предложение, выбрав правильный вариант. Счёт: ',
+    restart: 'Заново', matchPairs: 'Соедини пары', matchPairsDesc: 'Выбери английское слово, затем его перевод. Найдено ', found: ' из ', moves: ' · Попыток: ',
+    allPairs: '🎉 Все пары найдены!', newSet: 'Новая подборка',
+    phrases: 'Фразы', phrasesSub: 'Учись общаться на английском',
+    tabAiChat: 'AI-чат', tabChecklist: 'Чек-лист', tabRoleplay: 'Диалог по ролям', tabTraining: 'Тренировка',
+    chatGoal: 'Цель: построить диалог. Следуй подсказкам бота и выбирай фразы из правильных категорий.',
+    resetChat: 'Сбросить', chatHint: 'Хм, это не совсем то, что нужно. Попробуй использовать фразу для: ',
+    roleGoal: 'Цель: ', roleExcellent: 'Отлично! Ты уверенно ведёшь дискуссию.', roleTryAgain: 'Перечитай чек-лист фраз и попробуй ещё раз.',
+    playAgain: 'Пройти заново', nextBtn: 'Дальше', resultBtn: 'Результат',
+    whichCategory: 'К какой категории относится фраза? · Верно ',
+    verbs: 'Неправильные глаголы', verbsSub: 'Запоминай неправильные глаголы легко',
+    searchVerb: 'Поиск: buy, купить…', learned: 'Изучено: ', of: ' из ', trainPast: 'Тренировать Past Simple',
+    verbExpress: 'Глагол-Экспресс', score: 'Верно ', correctAnswer: 'Правильно: ',
+    startTest: 'Начать тест', back: 'Назад', typeAnswer: 'Впиши ответ…', correctAns: 'Правильный ответ: ',
+    resGood: 'Отлично! Тема закреплена.', resBad: 'Нужно больше 50% — перечитай правило и попробуй ещё раз.',
+    workOn: 'Над чем поработать', nextLesson: 'Следующий урок', tryAgain: 'Пройти ещё раз', backToPath: 'На карту', viewProgress: 'Посмотреть общий прогресс',
+    report: 'Результаты', reportSub: 'Посмотри, что уже получается и что стоит повторить',
+    yourResults: 'Твои результаты', reportSummary: 'Сводка прогресса English Project · данные сохраняются в этом браузере',
+    completedOf: 'Пройдено ', errorsToReview: 'ошибок для повтора', strengths: 'Что получается', strengthsGood: 'Пока нет тем с результатом выше 70%. Продолжай заниматься — прогресс появится здесь.',
+    review: 'Что повторить', reviewGood: 'Все основные блоки идут хорошо. Можно закрепить материал итоговым тестом.', printReport: 'Распечатать отчёт / сохранить PDF',
+    scoreStr: ' · Верно: ',
+    resultBtn: 'Результат'
+  },
+  en: {
+    nav: { home: 'Home', path: 'Path', rules: 'Rules', play: 'Practice', tools: 'Games', phr: 'Phrases', verbs: 'Verbs', report: 'Results' },
+    heroTitle: ['Learn', 'English', 'fast', 'and', 'easy'],
+    heroSub: 'Review the trimester topics easily: short rules, clear tests, and practice at your own pace.',
+    startPath: 'Start Learning', continuePath: 'Continue: ', viewReport: 'View Results', tryMini: 'Try a mini-game first',
+    bentoTitle: 'Everything you need to review', bentoSub: 'Trimester topics gathered in one place',
+    aboutTitle: 'About Project', aboutSub: 'English Language Project · University of Tyumen · 2026',
+    dashTitle: 'Learning Path', dashSub: 'Go through lessons step by step',
+    passed: 'Completed', ofLessons: 'of', lessons: 'lessons',
+    course: 'course', done: 'done', left: 'left',
+    lockLessons: 'Lock Lessons', unlockAll: 'Unlock All',
+    resetProgress: 'Reset Progress', saveCheat: 'Save Cheat Sheet', finalTest: 'Final Test', testLocked: 'Final Test unlocks after all lessons',
+    tabProgress: 'Progress', tabGrammar: 'Grammar', tabVocabulary: 'Vocabulary',
+    locked: 'Locked', completed: 'Completed', start: 'Start', train: 'Train',
+    practice: 'Practice', practiceSub: 'Train at your own pace: words and sentences',
+    wordCards: 'Word Cards', wordCardsDesc: 'Click the card to see the translation',
+    buildSentence: 'Build a Sentence', buildSentenceDesc: 'Tap words to move them',
+    tapWords: 'Tap the words below to build a sentence',
+    check: 'Check', skip: 'Skip', next: 'Next', correct: 'Correct!', almost: 'Almost, try again',
+    listen: 'Listen', nextWord: 'Next Word',
+    tools: 'Games & Training', toolsSub: 'Test your knowledge in different ways and reinforce difficult topics',
+    toolBlitz: 'Blitz', toolErrors: 'Errors', toolFind: 'Find Mistake', toolPairs: 'Pairs',
+    timeBlitz: 'Time Blitz', blitzDesc: 'Answer as many questions as possible in 60 seconds.',
+    startBlitz: 'Start Blitz', playAgain: 'Play Again', yourAnswer: 'Your answer…', answer: 'Answer', sec: 's',
+    errorReview: 'Error Review', noErrors: 'No errors yet. Incorrect answers from tests and blitz will be collected here automatically.',
+    showAnswer: 'Show Correct Answer', hideAnswer: 'Hide Answer', nextError: 'Next Error', clearList: 'Clear List',
+    findMistake: 'Find the Mistake', findMistakeDesc: 'Fix the sentence by choosing the correct option. Score: ',
+    restart: 'Restart', matchPairs: 'Match Pairs', matchPairsDesc: 'Choose an English word, then its translation. Found ', found: ' of ', moves: ' · Moves: ',
+    allPairs: '🎉 All pairs found!', newSet: 'New Set',
+    phrases: 'Phrases', phrasesSub: 'Learn to communicate in English',
+    tabAiChat: 'AI Chat', tabChecklist: 'Checklist', tabRoleplay: 'Roleplay', tabTraining: 'Training',
+    chatGoal: 'Goal: build a dialogue. Follow the bot\'s hints and choose phrases from the right categories.',
+    resetChat: 'Reset', chatHint: 'Hmm, that\'s not quite right. Try using a phrase for: ',
+    roleGoal: 'Goal: ', roleExcellent: 'Excellent! You confidently lead the discussion.', roleTryAgain: 'Read the phrase checklist and try again.',
+    playAgain: 'Play Again', nextBtn: 'Next', resultBtn: 'Result',
+    whichCategory: 'Which category does this phrase belong to? · Score: ',
+    verbs: 'Irregular Verbs', verbsSub: 'Learn irregular verbs easily',
+    searchVerb: 'Search: buy, go...', learned: 'Learned: ', of: ' of ', trainPast: 'Train Past Simple',
+    verbExpress: 'Verb Express', score: 'Score: ', correctAnswer: 'Correct: ',
+    startTest: 'Start Test', back: 'Back', typeAnswer: 'Type answer…', correctAns: 'Correct answer: ',
+    resGood: 'Excellent! Topic mastered.', resBad: 'Need more than 50% — read the rule and try again.',
+    workOn: 'What to work on', nextLesson: 'Next Lesson', tryAgain: 'Try Again', backToPath: 'Back to Path', viewProgress: 'View Overall Progress',
+    report: 'Results', reportSub: 'See what you are good at and what to review',
+    yourResults: 'Your Results', reportSummary: 'English Project progress summary · data is saved in this browser',
+    completedOf: 'Completed ', errorsToReview: 'errors to review', strengths: 'Your Strengths', strengthsGood: 'No topics above 70% yet. Keep practicing — progress will show up here.',
+    review: 'What to Review', reviewGood: 'All main blocks are going well. You can reinforce the material with the final test.', printReport: 'Print Report / Save PDF',
+    scoreStr: ' · Score: ',
+    resultBtn: 'Result'
+  }
+};
+
+const G=(a)=>a.map(x=>x.length>2?{q:x[0],a:x[1],o:x[2].split('/')}:{q:x[0],a:x[1]});
+const U=[
+{id:'be',g:'Present Simple',i:'🙋',t:'Verb to be',rule:'<div class="r"><b>I am</b> (’m), <b>he/she/it is</b> (’s), <b>we/you/they are</b> (’re).</div><div class="r">Отрицание: <b>am not, isn’t, aren’t</b>. Вопрос: <b>Are you a student?</b> — Yes, I am. / No, I’m not.</div>',
+q:G([["I ___ Dave.","am","am/is/are"],["He ___ from the UK.","is","is/are/am"],["We ___ friends.","are","is/are/am"],["___ you a student? — Yes, I am.","Are","Are/Is/Do"],["Is it your name? — No, it ___.","isn't","isn't/aren't/doesn't"],["Andrew ___ from Italy. (отрицание)","isn't|is not"],["They ___ (be) in my class.","are"],["I ___ not a student. (am/is/are)","am"],["Her name ___ Anya, not Ana.","is"]])},
+{id:'this',g:'Present Simple',i:'👜',t:'This/that, possessives',rule:'<div class="r"><b>this/these</b> — близко; <b>that/those</b> — далеко.</div><div class="r">my / your / his / her / our / their + сущ. — <b>This is my bag.</b><br>mine / yours — без сущ.: <b>It’s mine.</b><br>Принадлежность: <b>Sally’s bag, my friend’s bag</b>.</div>',
+q:G([["___ is my pen. (рядом)","This","This/That/These"],["___ are my keys. (далеко)","Those","Those/That/These"],["That’s my ___ bag. (подруга)","friend's","friend's/friends/friend"],["This isn’t your bag. It’s ___.","mine","mine/my/me"],["Is this ___ phone? (you)","your","your/yours/you"],["___ are windows. (рядом, мн.ч.)","These"],["The mobile of John = ___ mobile","John's"],["This bag is not ___ (you). It’s mine.","yours"]])},
+{id:'ps',g:'Present Simple',i:'📅',t:'Present Simple',rule:'<div class="r">I/you/we/they + <b>V</b>; he/she/it + <b>V+s/es</b> (<b>has</b> от have).</div><div class="r">Отрицание: <b>don’t / doesn’t + V</b>. Вопрос: <b>Do you…? / Does she…?</b></div><div class="r">Для регулярных действий и фактов. Сигналы: every day, usually, on Fridays.</div>',
+q:G([["We ___ films in the evening.","watch","watch/watches/watching"],["She ___ a great job.","has","has/have/haves"],["He ___ (get up) at six.","gets up"],["Alice ___ like flying.","doesn't","doesn't/don't/isn't"],["___ you study English? — Yes, I do.","Do","Do/Does/Are"],["___ she want to be a pilot?","Does","Does/Do/Is"],["I ___ (not eat) junk food.","don't eat|do not eat"],["Gagan ___ (go) home at five.","goes"],["What time ___ it start?","does","does/do/is"]])},
+{id:'adv',g:'Present Simple',i:'⏱️',t:'Adverbs of frequency',rule:'<div class="r">never → hardly ever → sometimes → often → usually → always</div><div class="r">Наречие стоит <b>после to be</b> (He is <b>never</b> late) и <b>перед другими глаголами</b> (We <b>often</b> play).</div><div class="r">on Fridays · in June · at 7.30 · once a week · twice a year · three times a day</div>',
+q:G([["He ___ late. (never)","is never","is never/never is/is not never"],["They ___ football on Sundays. (often)","often play","often play/play often/plays often"],["I go to the cinema ___ Fridays.","on","on/in/at"],["My birthday is ___ June.","in","in/on/at"],["I get up ___ 7.30.","at","at/in/on"],["Twice a year =","два раза в год","два раза в год/дважды в неделю/каждый день"],["I ___ drink coffee. (100%)","always","always/never/hardly ever"],["She ___ (usually / have) lunch at one.","usually has"]])},
+{id:'hg',g:'Present Simple',i:'🏠',t:'Have got · There is/are',rule:'<div class="r"><b>have got / has got</b>: I’ve got, she’s got. Отрицание: <b>haven’t / hasn’t got</b>. Вопрос: <b>Have you got…?</b></div><div class="r"><b>There is</b> + ед.ч. / <b>There are</b> + мн.ч. Вопрос: <b>Is there…? Are there…?</b></div><div class="r">Предлоги: in, on, under, above, behind, between, next to, near, opposite, in front of.</div>',
+q:G([["They ___ sixteen children.","have got","have got/has got/is got"],["She ___ a brother.","has got","has got/have got/have"],["He ___ (not) a car. (got)","hasn't got|has not got"],["___ there a kitchen?","Is","Is/Are/Has"],["___ there any buses at night?","Are","Are/Is/Have"],["There ___ a desk in the room.","is","is/are/has"],["There ___ chairs and a table.","are","are/is/have"],["The cat is ___ the dog. (перед)","in front of","in front of/behind/between"],["The lamp is ___ the sofa and the table.","between","between/under/opposite"]])},
+{id:'pc',g:'Present Continuous',i:'🎬',t:'Present Continuous',rule:'<div class="r"><b>am / is / are + V-ing</b> — действие происходит <b>сейчас</b> или в этот период.</div><div class="r">Отрицание: <b>isn’t running</b>. Вопрос: <b>Is he working?</b></div><div class="r">Сигналы: now, at the moment, today, Look!, Listen!<br>Правописание: run → running, have → having, lie → lying.</div><div class="r">Present Simple = <i>всегда/регулярно</i>; Present Continuous = <i>прямо сейчас</i>.</div>',
+q:G([["I ___ (read) a book now.","am reading"],["She ___ (not sleep).","isn't sleeping|is not sleeping"],["They ___ football at the moment.","are playing","are playing/play/is playing"],["___ he working now?","Is","Is/Does/Are"],["We ___ (run) in the park.","are running"],["What ___ you doing?","are","are/do/is"],["He ___ a coffee right now. (have)","is having","is having/has/have"],["Look! It ___ (rain).","is raining"],["I ___ up at 7 every day.","get","get/am getting/getting"]])},
+{id:'wr',g:'Past Simple',i:'🕰️',t:'Was / were',rule:'<div class="r">I/he/she/it → <b>was</b>; we/you/they → <b>were</b>.</div><div class="r">Отрицание: <b>wasn’t / weren’t</b>. Вопрос: <b>Was she…? Were you…?</b></div><div class="r">Сигналы: yesterday, last night/week, in 2015, a week ago, on Saturday.</div>',
+q:G([["I ___ at home last night.","was","was/were/am"],["Her parents ___ very poor.","were","was/were/are"],["___ you born in this country?","Were","Were/Was/Did"],["She ___ shy as a child. (отрицание)","wasn't|was not"],["We ___ in Paris yesterday.","were","were/was/are"],["___ it a good weekend?","Was","Was/Were/Did"],["They ___ at school. (weren’t)","weren't|were not"],["Lionel Messi ___ a good student.","was","was/were/is"]])},
+{id:'pst',g:'Past Simple',i:'⏪',t:'Past Simple',rule:'<div class="r">Регулярные: <b>V + -ed</b> (work → worked), study → <b>studied</b>, stop → <b>stopped</b>, love → <b>loved</b>.</div><div class="r">Неправильные — форма из таблицы: go → <b>went</b>, buy → <b>bought</b>.</div><div class="r">Отрицание: <b>didn’t + V</b>. Вопрос: <b>Did you…?</b> — Yes, I did. Сигналы: ago, last, yesterday, in 1999.</div>',
+q:G([["Samiya ___ (start) university at fifteen.","started"],["She ___ (love) her village.","loved"],["Her parents ___ (move) to a new home.","moved"],["Lidia ___ (become) a model.","became"],["I ___ (not have) a car last year.","didn't have|did not have"],["___ she go to university?","Did","Did/Does/Was"],["He ___ (buy) a new phone.","bought"],["Did you see him? — Yes, I ___.","did","did/was/do"],["Yesterday I ___ (study) English.","studied"],["We ___ (not go) to the party.","didn't go|did not go"]])},
+{id:'irr',g:'Past Simple',i:'🔥',t:'Irregular verbs',rule:'<div class="r">Впиши форму <b>Past Simple</b> неправильного глагола. Список из КТ 3: be, become, begin, build, buy, catch, choose, come, do, drink, drive, fly, give, have, make, say, see, speak, take, write и др.</div><div class="r">Полная таблица всех трёх форм — во вкладке «Глаголы».</div>',
+irr:'be=was|were=быть;become=became=становиться;begin=began=начинать;build=built=строить;burn=burnt=жечь;buy=bought=покупать;catch=caught=ловить;choose=chose=выбирать;come=came=приходить;cost=cost=стоить;cut=cut=резать;do=did=делать;draw=drew=рисовать;drink=drank=пить;drive=drove=водить;fall=fell=падать;feel=felt=чувствовать;fight=fought=драться;find=found=находить;fly=flew=летать;forget=forgot=забывать;give=gave=давать;have=had=иметь;make=made=делать;read=read=читать;say=said=говорить;see=saw=видеть;speak=spoke=говорить;spend=spent=тратить;stand=stood=стоять;take=took=брать;tell=told=рассказывать;understand=understood=понимать;wake=woke=просыпаться;write=wrote=писать'},
+{id:'v1',g:'Словарь',i:'🌍',t:'Countries',v:'British=британский;French=французский;Italian=итальянский;German=немецкий;American=американский;Spanish=испанский;Turkish=турецкий;Chinese=китайский;Japanese=японский;Polish=польский;Russian=русский'},
+{id:'v2',g:'Словарь',i:'🎒',t:'Objects & places',v:'keys=ключи;a laptop=ноутбук;a magazine=журнал;a newspaper=газета;earphones=наушники;a dictionary=словарь;an umbrella=зонт;a wallet=кошелёк;a toothbrush=зубная щётка;a souvenir=сувенир;a ticket=билет;a train station=вокзал;a snack bar=закусочная;a pocket=карман;a post office=почта;a library=библиотека;a museum=музей;a pharmacy=аптека;a supermarket=супермаркет;a cinema=кинотеатр'},
+{id:'v3',g:'Словарь',i:'👨‍👩‍👧',t:'Family & personality',v:'a husband=муж;a wife=жена;parents=родители;children=дети;a son=сын;a daughter=дочь;an uncle=дядя;an aunt=тётя;talkative=разговорчивый;friendly=дружелюбный;intelligent=умный;serious=серьёзный;funny=смешной;boring=скучный;kind=добрый;quiet=тихий'},
+{id:'v4',g:'Словарь',i:'🛋️',t:'Home & routines',v:'a kitchen=кухня;a living room=гостиная;a bedroom=спальня;a bathroom=ванная;a wardrobe=шкаф для одежды;a cupboard=буфет;a sofa=диван;an armchair=кресло;a desk=письменный стол;a shelf=полка;get up=вставать;go to bed=ложиться спать;have breakfast=завтракать;leave home=уходить из дома;get home=приходить домой;always=всегда;usually=обычно;often=часто;sometimes=иногда;never=никогда;hardly ever=почти никогда;at the weekend=в выходные;at night=ночью'},
+{id:'v5',g:'Словарь',i:'🍽️',t:'Food & jobs',v:'butter=сливочное масло;oil=растительное масло;bread=хлеб;cheese=сыр;rice=рис;porridge=каша;noodles=лапша;a cucumber=огурец;tomatoes=помидоры;carrots=морковь;potatoes=картофель;garlic=чеснок;an onion=лук;strawberries=клубника;grapes=виноград;beef=говядина;pork=свинина;fish=рыба;a bill=счёт;a tip=чаевые;to order=заказывать;a lawyer=юрист;an engineer=инженер;a shop assistant=продавец;an accountant=бухгалтер;a doctor=врач;a receptionist=администратор;a waiter=официант'},
+{id:'v6',g:'Словарь',i:'🗓️',t:'Time & places',v:'a quarter past=четверть после;half past=половина;in the evening=вечером;book a tour=забронировать тур;beautiful=красивый;amazing=удивительный;famous=известный;expensive=дорогой;awesome=потрясающий;mountain=гора;beach=пляж;an apartment=квартира;a clothes shop=магазин одежды;a shoe shop=обувной магазин;an electronics shop=магазин электроники;January=январь;June=июнь;December=декабрь;Sunday=воскресенье;Friday=пятница;the first=первый;the second=второй;the third=третий;the fifth=пятый;the twelfth=двенадцатый;the thirtieth=тридцатый'}
+];
+
+const {useState,useMemo,useEffect,useRef}=React,html=htm.bind(React.createElement);
+const MO=window.Motion||window.FramerMotion||window.framerMotion,cache={};
+const shim=new Proxy({},{get:(_,t)=>cache[t]||(cache[t]=p=>{const{initial,animate,exit,transition,whileHover,whileTap,whileInView,viewport,layoutId,layout,...r}=p;return React.createElement(t,r)})});
+const motion=MO?MO.motion:shim,AnimatePresence=MO?MO.AnimatePresence:({children})=>children;
+const Ic=n=>ICONS[n]||(()=>null);
+const Lock=Ic('Lock'),Check=Ic('Check'),Skip=Ic('Skip'),Send=Ic('Send'),Trophy=Ic('Trophy'),ArrowRight=Ic('ArrowRight'),BookIc=Ic('BookOpen');
+
+const sh=a=>[...a].sort(()=>Math.random()-.5),norm=s=>s.toLowerCase().replace(/[’`]/g,"'").replace(/\s+/g,' ').trim();
+const PROGRESS_KEY='lp2',PROGRESS_BACKUP_KEY='study_english_progress_v1',ERRORS_KEY='se_errors',VERBS_KEY='lpv', CHAT_KEY='se_chat_state', LANG_KEY='se_lang';
+
+const cleanProgress=v=>{if(!v||typeof v!=='object')return{d:{},xp:0,v:1};return{...v,v:1,d:v.d&&typeof v.d==='object'?v.d:{},xp:Number(v.xp)||0}};
+const tryParse=k=>{try{const v=localStorage.getItem(k);return v?cleanProgress(JSON.parse(v)):null}catch(e){return null}};
+const load=()=>tryParse(PROGRESS_KEY)||tryParse(PROGRESS_BACKUP_KEY)||{d:{},xp:0,v:1};
+
+function build(u){
+ if(u.q)return sh(u.q).slice(0,10);
+ if(u.v){const it=u.v.split(';').map(x=>x.split('='));
+  return sh(it).slice(0,12).map(([e,r],i)=>{const k=i%2,c=sh(it.filter(x=>x[0]!=e)).slice(0,3).map(x=>x[k?0:1]),a=k?e:r;return{q:k?`Как по-английски: «${r}»?`:`Переведи: «${e}»`,a,o:sh([a,...c])}})}
+ return sh(u.irr.split(';').map(x=>x.split('='))).slice(0,12).map(([i,p,r])=>({q:`Past Simple: <u>${i}</u> (${r})`,a:p}));
+}
+const speak=(text)=>{try{if(!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=0.9;speechSynthesis.speak(u)}catch(e){}};
+const spring={type:'spring',stiffness:300,damping:18};
+const SN=['She bought a new phone yesterday','They were at home last night',"He doesn't go to school on Sunday",'Are you reading a book now','I am reading a book at the moment'];
+const WORDS=U.filter(u=>u.v).flatMap(u=>u.v.split(';').map(x=>x.split('=')));
+
+const CATS = [
+  { ru: '💬 Выражение мнения', en: '💬 Expressing Opinion', list: `In my opinion...;I think...;I believe...;From my point of view...;Personally, I think...;If you ask me…;As I see it …;To my mind…;I am sure that…;I’m convinced that…;There’s no doubt that…;It’s clear to me that…;I suppose…;It seems to me that…;Correct me if I’m wrong, but…` },
+  { ru: '✅ Согласие', en: '✅ Agreement', list: `I agree.;I agree with you.;That’s a good point.;You’re right.;I see what you mean.;Absolutely.;That’s true.;I think so too.;I couldn’t agree more.;I’m with you on that.;I share your opinion.;Fair enough.;I guess so.` },
+  { ru: '🙅 Несогласие', en: '🙅 Disagreement', list: `I don’t agree.;I disagree (with you here).;I see your point, but...;I’m not sure I agree.;That’s true, but...;I have a different opinion.;I don’t think so.;That’s not how I see it.;I don’t see it that way.;I agree up to the point, but…;That’s a fair point, however…;That’s nonsense.;You can’t be serious.;That doesn’t make sense.` },
+  { ru: '❓ Уточнение', en: '❓ Clarification', list: `Could you explain...?;What do you mean by...?;Sorry, I didn’t catch that.;Could you say that again?;Could you repeat that, please?;Sorry, what do you mean?;Can you give an example?;Could you be more specific?;Do you mean that...?;Are you saying that...?;If I understand you correctly, ...;Have I got that right?;Let me get this straight.;Could you tell me more about...?;What exactly do you mean?;Can you clarify that?;I’d like to know more about...` },
+  { ru: '🤝 Вовлечение других', en: '🤝 Involving Others', list: `What do you think?;Do you agree?;How about you?;What’s your opinion?;What about you?;What are your thoughts on this?;Would you like to add anything?;Do you have anything to add?;Let’s discuss this together.;Does anyone else have an opinion?;Let’s hear what others think.;Do you see it the same way?;Do you share that view?;Have you got any thoughts on that?;That’s interesting - tell us more.;I’d love to hear your opinion.;Don’t be shy - what do you think?;Feel free to jump in.;Anyone want to add to that?` },
+  { ru: '🏁 Подведение итога', en: '🏁 Summarizing', list: `So, we agree that...;To sum up...;In conclusion...;On the whole, ...;All in all, ...;In short, ...;To put it briefly, ...;So, to sum up what we’ve said...;Let’s summarize the main points.;We’ve discussed several ideas today.;The main points were...;We seem to agree that...;It seems we have different opinions on...;We didn’t reach an agreement, but...;I think we can finish there.;Thank you all for your ideas.;Good discussion, everyone.` }
+];
+
+// СЛОВАРЬ ПОЛНЫХ ПРЕДЛОЖЕНИЙ ДЛЯ AI-ЧАТА
+const CHAT_SENTENCES = {
+  'In my opinion...': 'In my opinion, remote learning is very convenient.',
+  'I think...': 'I think students can study at their own pace.',
+  'I believe...': 'I believe we need more interactive tasks.',
+  'From my point of view...': 'From my point of view, it is a great idea.',
+  'Personally, I think...': 'Personally, I think online classes save time.',
+  'If you ask me...': 'If you ask me, I prefer traditional school.',
+  'As I see it ...': 'As I see it, the internet connection is the main problem.',
+  'To my mind…': 'To my mind, this is the future of education.',
+  'I am sure that…': 'I am sure that this will help students.',
+  'I’m convinced that…': 'I’m convinced that we need more practice.',
+  'There’s no doubt that…': 'There’s no doubt that remote learning is here to stay.',
+  'It’s clear to me that…': 'It’s clear to me that we need a break.',
+  'I suppose…': 'I suppose it depends on the subject.',
+  'It seems to me that…': 'It seems to me that teachers work harder now.',
+  'Correct me if I’m wrong, but…': 'Correct me if I’m wrong, but we have a test soon?',
+
+  'I agree.': 'I agree with this statement.',
+  'I agree with you.': 'I agree with you on that.',
+  'That’s a good point.': 'That’s a good point, I hadn\'t thought about it.',
+  'You’re right.': 'You’re right, it is very important.',
+  'I see what you mean.': 'I see what you mean, it makes sense.',
+  'Absolutely.': 'Absolutely, I completely support it.',
+  'That’s true.': 'That’s true, it happens all the time.',
+  'I think so too.': 'I think so too, it is a great idea.',
+  'I couldn’t agree more.': 'I couldn’t agree more with your point.',
+  'I’m with you on that.': 'I’m with you on that, let\'s do it.',
+  'I share your opinion.': 'I share your opinion about online learning.',
+  'Fair enough.': 'Fair enough, I understand your point.',
+  'I guess so.': 'I guess so, it seems reasonable.',
+
+  'I don’t agree.': 'I don’t agree, I think it\'s a bad idea.',
+  'I disagree (with you here).': 'I disagree with you here, it is not that simple.',
+  'I see your point, but...': 'I see your point, but I still think it\'s difficult.',
+  'I’m not sure I agree.': 'I’m not sure I agree, let me explain why.',
+  'That’s true, but...': 'That’s true, but it\'s not the only problem.',
+  'I have a different opinion.': 'I have a different opinion on this matter.',
+  'I don’t think so.': 'I don’t think so, we need more time.',
+  'That’s not how I see it.': 'That’s not how I see it at all.',
+  'I don’t see it that way.': 'I don’t see it that way, I think it\'s useful.',
+  'I agree up to the point, but…': 'I agree up to the point, but it is not for everyone.',
+  'That’s a fair point, however…': 'That’s a fair point, however, I prefer going out.',
+  'That’s nonsense.': 'That’s nonsense, you can\'t be serious.',
+  'You can’t be serious.': 'You can’t be serious about this plan.',
+  'That doesn’t make sense.': 'That doesn’t make sense to me.',
+
+  'Could you explain...?': 'Could you explain that again, please?',
+  'What do you mean by...?': 'What do you mean by \'flexible schedule\'?',
+  'Sorry, I didn’t catch that.': 'Sorry, I didn’t catch that, could you repeat?',
+  'Could you say that again?': 'Could you say that again, a bit louder?',
+  'Could you repeat that, please?': 'Could you repeat that, please? I missed it.',
+  'Sorry, what do you mean?': 'Sorry, what do you mean exactly?',
+  'Can you give an example?': 'Can you give an example of what you mean?',
+  'Could you be more specific?': 'Could you be more specific about the rules?',
+  'Do you mean that...?': 'Do you mean that you don’t like it?',
+  'Are you saying that...?': 'Are you saying that we should stop?',
+  'If I understand you correctly, ...': 'If I understand you correctly, you want to quit.',
+  'Have I got that right?': 'Have I got that right, or did I misunderstand?',
+  'Let me get this straight.': 'Let me get this straight, you want to do it now?',
+  'Could you tell me more about...?': 'Could you tell me more about your idea?',
+  'What exactly do you mean?': 'What exactly do you mean by that?',
+  'Can you clarify that?': 'Can you clarify that point, please?',
+  'I’d like to know more about...': 'I’d like to know more about this topic.',
+
+  'What do you think?': 'What do you think about this idea?',
+  'Do you agree?': 'Do you agree with this statement?',
+  'How about you?': 'How about you, what is your opinion?',
+  'What’s your opinion?': 'What’s your opinion on remote learning?',
+  'What about you?': 'What about you, do you like it?',
+  'What are your thoughts on this?': 'What are your thoughts on this issue?',
+  'Would you like to add anything?': 'Would you like to add anything to this?',
+  'Do you have anything to add?': 'Do you have anything to add, Robert?',
+  'Let’s discuss this together.': 'Let’s discuss this together, team.',
+  'Does anyone else have an opinion?': 'Does anyone else have an opinion on this?',
+  'Let’s hear what others think.': 'Let’s hear what others think about it.',
+  'Do you see it the same way?': 'Do you see it the same way as I do?',
+  'Do you share that view?': 'Do you share that view on education?',
+  'Have you got any thoughts on that?': 'Have you got any thoughts on that matter?',
+  'That’s interesting - tell us more.': 'That’s interesting - tell us more about it.',
+  'I’d love to hear your opinion.': 'I’d love to hear your opinion on this.',
+  'Don’t be shy - what do you think?': 'Don’t be shy - what do you think?',
+  'Feel free to jump in.': 'Feel free to jump in at any time.',
+  'Anyone want to add to that?': 'Anyone want to add to that?',
+
+  'So, we agree that...': 'So, we agree that remote learning is useful.',
+  'To sum up...': 'To sum up, it has pros and cons.',
+  'In conclusion...': 'In conclusion, I think it is a great tool.',
+  'On the whole, ...': 'On the whole, it is a positive experience.',
+  'All in all, ...': 'All in all, we should keep doing it.',
+  'In short, ...': 'In short, I like it very much.',
+  'To put it briefly, ...': 'To put it briefly, it is complicated.',
+  'So, to sum up what we’ve said...': 'So, to sum up what we’ve said, communication is key.',
+  'Let’s summarize the main points.': 'Let’s summarize the main points of our talk.',
+  'We’ve discussed several ideas today.': 'We’ve discussed several ideas today, which is great.',
+  'The main points were...': 'The main points were flexibility and cost.',
+  'We seem to agree that...': 'We seem to agree that it is the future.',
+  'It seems we have different opinions on...': 'It seems we have different opinions on the price.',
+  'We didn’t reach an agreement, but...': 'We didn’t reach an agreement, but we had a good talk.',
+  'I think we can finish there.': 'I think we can finish there for today.',
+  'Thank you all for your ideas.': 'Thank you all for your ideas and time.',
+  'Good discussion, everyone.': 'Good discussion, everyone, let us meet again.'
+};
+
+const INIT_CHAT = {
+  ru: [{b:1, t:"Привет! Давай обсудим онлайн-обучение. Что ты думаешь?"}],
+  en: [{b:1, t:"Hi! Let's discuss remote learning. What do you think?"}]
+};
+const CHAT_STEPS = {
+  ru: [
+    { req: [0], nextBot: "Согласен! А как насчет того, что студенты скучают по общению? Ты согласен или нет?" },
+    { req: [1, 2], nextBot: "Понятно. А можешь уточнить, что именно ты имеешь в виду?" },
+    { req: [3, 4], nextBot: "Спасибо за разъяснение! Давай подведем итог." },
+    { req: [5], nextBot: "Отличный диалог! Ты успешно использовал все нужные фразы." }
+  ],
+  en: [
+    { req: [0], nextBot: "I agree! What about the fact that students miss socializing? Do you agree or disagree?" },
+    { req: [1, 2], nextBot: "Got it. Can you clarify what exactly you mean by that?" },
+    { req: [3, 4], nextBot: "Thanks for the explanation! Let's summarize." },
+    { req: [5], nextBot: "Excellent dialogue! You successfully used all the necessary phrases." }
+  ]
+};
+
+const PH = {
+  ru: [['Фаза 1: Начало обсуждения и предложение городов','Начни разговор и предложи один или два российских города.',[['A',`Hi, everyone! We need to plan our city break. I’d like to suggest that we visit St. Petersburg. It has amazing museums and theatres.`],['B',`That sounds interesting, but what about Kazan? I’ve heard that the local cuisine there is fantastic, and it’s very student-friendly.`],['C',`Both are good options, but we need to think about our budget. How much does a train ticket to Kazan cost compared with one to St. Petersburg?`]]],['Фаза 2: Обсуждение конкретных достопримечательностей','Используй целевую лексику, чтобы рассказать, что там делать.',[['A',`If we go to St. Petersburg, we can go sightseeing at the Hermitage Museum and the Peter and Paul Fortress. They are famous places of interest.`],['B',`True, but in Kazan, we can visit the Kazan Kremlin and then eat traditional Tatar food, such as echpochmak. It would be a more unique experience.`],['C',`I see your point, but St. Petersburg offers many free walking tours, which is better for our student budget.`]]],['Фаза 3: Обработка несогласия и опровержение','Практикуй вежливое опровержение. Студенты должны не согласиться, но предложить компромисс.',[['A',`I’d like to go to St. Petersburg for the culture, but I understand your concern about the budget.`],['B',`I’m not sure about St. Petersburg because food and accommodation can be very expensive there. However, Kazan has affordable hostels and great food.`],['C',`That’s a good point; however, the journey to Kazan takes quite a long time. What if we look for student discounts for museums in St. Petersburg?`]]],['Фаза 4: Достижение консенсуса и завершение','Договоритесь об одном городе и подведите итог плана.',[['A',`Okay, I agree that Kazan is more budget-friendly. Let’s choose Kazan for our city break.`],['B',`Great! I’ll check the prices for hostels and train tickets tonight.`],['C',`Perfect. I’ll make a list of the best places to eat and the top places of interest to visit. I think this will be a great trip!`]]]],
+  en: [['Phase 1: Opening the Discussion and Suggesting Cities','Start the conversation and propose one or two Russian cities.',[['A',`Hi, everyone! We need to plan our city break. I’d like to suggest that we visit St. Petersburg. It has amazing museums and theatres.`],['B',`That sounds interesting, but what about Kazan? I’ve heard that the local cuisine there is fantastic, and it’s very student-friendly.`],['C',`Both are good options, but we need to think about our budget. How much does a train ticket to Kazan cost compared with one to St. Petersburg?`]]],['Phase 2: Discussing Specific Places of Interest','Use the target vocabulary to talk about what to do there.',[['A',`If we go to St. Petersburg, we can go sightseeing at the Hermitage Museum and the Peter and Paul Fortress. They are famous places of interest.`],['B',`True, but in Kazan, we can visit the Kazan Kremlin and then eat traditional Tatar food, such as echpochmak. It would be a more unique experience.`],['C',`I see your point, but St. Petersburg offers many free walking tours, which is better for our student budget.`]]],['Phase 3: Handling Disagreement and Refutation','Practise polite refutation. Students must disagree but offer a compromise.',[['A',`I’d like to go to St. Petersburg for the culture, but I understand your concern about the budget.`],['B',`I’m not sure about St. Petersburg because food and accommodation can be very expensive there. However, Kazan has affordable hostels and great food.`],['C',`That’s a good point; however, the journey to Kazan takes quite a long time. What if we look for student discounts for museums in St. Petersburg?`]]],['Phase 4: Reaching a Consensus and Closing','Agree on one city and summarise the plan.',[['A',`Okay, I agree that Kazan is more budget-friendly. Let’s choose Kazan for our city break.`],['B',`Great! I’ll check the prices for hostels and train tickets tonight.`],['C',`Perfect. I’ll make a list of the best places to eat and the top places of interest to visit. I think this will be a great trip!`]]]]
+};
+
+const RP = {
+  ru: [
+    ['Ты — Student C. Предложи вариант, который уместно продолжит разговор и поднимет вопрос бюджета.',['Whatever. I don’t care where we go.','I want to talk about football now.'],'Верно: ты поддержал обсуждение и перешёл к бюджету. «How much does … cost?» — это уточнение. Грубая или не по теме реплика ничего не даёт обсуждению.'],
+    ['Ты — Student C. Возрази вежливо и приведи аргумент про бюджет.',['No. Kazan is boring. St. Petersburg is better.','I never go to museums.'],'Верно: «I see your point, but…» — вежливое несогласие, и сразу аргумент (free walking tours). Резкое «No» без довода звучит невежливо.'],
+    ['Ты — Student C. Нужно возразить, но предложить компромисс.',['You are wrong. We will go to St. Petersburg.','I don’t know. Ask someone else.'],'Верно: «That’s a good point; however…» признаёт чужую мысль, а «What if we…?» предлагает компромисс. Без компромисса цель фазы не достигнута.'],
+    ['Ты — Student C. Согласись с итогом и распредели задачи.',['I don’t want to plan anything.','Okay. Bye.'],'Верно: в финале нужно согласиться, подвести итог и взять на себя часть плана: «Perfect. I’ll make a list…».']
+  ],
+  en: [
+    ['You are Student C. Propose an option that appropriately continues the conversation and raises the budget question.',['Whatever. I don’t care where we go.','I want to talk about football now.'],'Correct: you supported the discussion and moved to the budget. "How much does ... cost?" is a clarification. A rude or off-topic remark adds nothing to the discussion.'],
+    ['You are Student C. Object politely and give a budget argument.',['No. Kazan is boring. St. Petersburg is better.','I never go to museums.'],'Correct: "I see your point, but..." is a polite disagreement, immediately followed by an argument (free walking tours). A harsh "No" without reasoning sounds impolite.'],
+    ['You are Student C. You need to object but offer a compromise.',['You are wrong. We will go to St. Petersburg.','I don’t know. Ask someone else.'],'Correct: "That\'s a good point; however..." acknowledges the other idea, and "What if we...?" offers a compromise. Without a compromise, the goal is not achieved.'],
+    ['You are Student C. Agree with the result and distribute tasks.',['I don’t want to plan anything.','Okay. Bye.'],'Correct: in the final phase, you need to agree, summarize, and take part of the plan: "Perfect. I’ll make a list...".']
+  ]
+};
+
+const VB='be=was / were=been=быть;become=became=become=становиться;begin=began=begun=начинать;build=built=built=строить;burn=burnt=burnt=жечь, сжигать;buy=bought=bought=покупать;catch=caught=caught=ловить;choose=chose=chosen=выбирать;come=came=come=приходить;cost=cost=cost=стоить;cut=cut=cut=резать;do=did=done=делать;draw=drew=drawn=рисовать;drink=drank=drunk=пить;drive=drove=driven=водить;fall=fell=fallen=падать;feel=felt=felt=чувствовать;fight=fought=fought=драться;find=found=found=находить;fly=flew=flown=летать;forget=forgot=forgotten=забывать;give=gave=given=давать;have=had=had=иметь;make=made=made=делать, создавать;read=read=read=читать;say=said=said=говорить;see=saw=seen=видеть;speak=spoke=spoken=говорить;spend=spent=spent=тратить;stand=stood=stood=стоять;take=took=taken=брать;tell=told=told=рассказывать;understand=understood=understood=понимать;wake=woke=woken=будить, просыпаться;write=wrote=written=писать';
+const fade={initial:{opacity:0,y:16},animate:{opacity:1,y:0},exit:{opacity:0}};
+const BC=['rgba(79,140,255,.4)','rgba(168,85,247,.4)','rgba(236,72,153,.4)','rgba(249,115,22,.5)','rgba(34,197,94,.4)','rgba(99,102,241,.4)'];
+
+function Flip({lang}){
+ const t = L[lang];
+ const [w,setW]=useState(WORDS[0]),[f,setF]=useState(false);
+ const other=()=>{setF(false);setW(WORDS[Math.floor(Math.random()*WORDS.length)])};
+ return html`<div>
+  <${motion.div} className="flipw" style=${{height:170}} role="button" tabIndex=${0} aria-label="Flip card" onClick=${()=>setF(!f)} onKeyDown=${e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setF(!f)}}}>
+   <${motion.div} className="flipi" animate=${{rotateY:f?180:0}} transition=${{duration:.8,type:'spring',stiffness:80,damping:13}}><div className="ff">${w[0]}</div><div className="ff bk">${w[1]}</div><//>
+  <//>
+  <div style=${{display:'flex',gap:8,justifyContent:'center',marginTop:8,flexWrap:'wrap'}}>
+   <button className="btn t" style=${{border:'1px solid #dbe3f1'}} onClick=${()=>speak(w[0])} aria-label="Listen">🔊 ${t.listen}</button>
+   <${motion.button} className="btn" whileHover=${{y:-3,scale:1.04}} whileTap=${{scale:.95}} transition=${spring} onClick=${other}>${t.nextWord}<//>
+  </div>
+ </div>`}
+
+function Confetti(){
+ const P=useMemo(()=>[...Array(28)].map((_,k)=>{const a=Math.random()*6.28,d=60+Math.random()*100;return{x:Math.cos(a)*d,y:Math.sin(a)*d-30,c:['#4f8cff','#f472b6','#facc15','#22c55e','#a78bfa'][k%5],r:Math.random()*360}}),[]);
+ return html`<div style=${{position:'absolute',left:'50%',top:'35%',pointerEvents:'none',zIndex:5}}>${P.map((p,k)=>html`<${motion.span} key=${k} style=${{position:'absolute',width:9,height:9,borderRadius:k%2?'50%':'2px',background:p.c}} initial=${{x:0,y:0,opacity:1,scale:1}} animate=${{x:p.x,y:p.y+40,opacity:0,scale:.4,rotate:p.r}} transition=${{duration:1.1,ease:'easeOut'}}/>`)}</div>`}
+
+function Builder({lang}){
+ const t = L[lang];
+ const init=i=>{const t=SN[i].split(' ');return{pool:sh(t.map((w,k)=>[w,k])),got:[]}};
+ const [i,setI]=useState(0),[b,setB]=useState(()=>init(0)),[st,setSt]=useState(null),[boom,setBoom]=useState(0);
+ const add=k=>{if(st===true)return;setSt(null);setB({pool:b.pool.filter(x=>x[1]!=k),got:[...b.got,b.pool.find(x=>x[1]==k)]})};
+ const del=k=>{if(st===true)return;setSt(null);setB({pool:[...b.pool,b.got.find(x=>x[1]==k)],got:b.got.filter(x=>x[1]!=k)})};
+ const chk=()=>{const ok=b.got.map(x=>x[0]).join(' ')==SN[i];setSt(ok);if(ok)setBoom(n=>n+1)};
+ const nx=()=>{const n=(i+1)%SN.length;setI(n);setB(init(n));setSt(null)};
+ const chip=(x,f)=>html`<${motion.button} key=${i+'-'+x[1]} layoutId=${'c'+i+'-'+x[1]} className="chip" whileHover=${{y:-3}} transition=${{type:'spring',stiffness:350,damping:28}} onClick=${()=>f(x[1])}>${x[0]}<//>`;
+ return html`<div style=${{position:'relative'}}>${boom>0&&html`<${Confetti} key=${boom}/>`}<${motion.div} className=${'zone '+(st===true?'ok':st===false?'no':'')} animate=${{backgroundColor:st===true?'#dcfce7':st===false?'#fee2e2':'rgba(255,255,255,0)',...(st===false?{x:[0,-8,8,-6,6,0]}:{x:0})}} transition=${{duration:.4}}>${b.got.length?b.got.map(x=>chip(x,del)):html`<em>${t.tapWords}</em>`}<//><div style=${{minHeight:54,marginBottom:12}}>${b.pool.map(x=>chip(x,add))}</div>
+ <div style=${{display:'flex',gap:10,flexWrap:'wrap',alignItems:'center'}}>${st===true?html`<${motion.button} className="btn g" whileHover=${{scale:1.05}} whileTap=${{scale:.95}} onClick=${nx}>${t.next} →<//>`:html`<${motion.button} className="btn" disabled=${!b.got.length} whileHover=${{scale:1.05}} whileTap=${{scale:.95}} onClick=${chk}><${Check} size=${16}/> ${t.check}<//>`}<${motion.button} className="btn t" whileHover=${{scale:1.05}} whileTap=${{scale:.95}} onClick=${nx}><${Skip} size=${16}/> ${t.skip}<//>${st===true&&html`<b style=${{color:'#16a34a'}}>✅ ${t.correct}</b>`}${st===false&&html`<b style=${{color:'#dc2626'}}>❌ ${t.almost}</b>`}</div></div>`}
+
+function Practice({lang}){
+ const t = L[lang];
+ return html`<div className="pr"><div className="pl"><div className="glass bc"><h3>🃏 ${t.wordCards}</h3><p>${t.wordCardsDesc}</p><div style=${{marginTop:12}}><${Flip} lang=${lang}/></div></div><div className="glass bc"><h3>🧩 ${t.buildSentence}</h3><p>${t.buildSentenceDesc}</p><div style=${{marginTop:12}}><${Builder} lang=${lang}/></div></div></div></div>`}
+
+function Chat({lang}){
+ const t = L[lang];
+ const key = CHAT_KEY + '_' + lang;
+ const [m, setM] = useState(() => { try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : INIT_CHAT[lang]; } catch { return INIT_CHAT[lang]; } });
+ const [step, setStep] = useState(() => { try { const s = localStorage.getItem(key + '_step'); return s ? parseInt(s) : 0; } catch { return 0; } });
+ const [ci, setCi] = useState(0);
+ const box = useRef(null);
+
+ useEffect(() => { box.current && box.current.scrollTo({top: box.current.scrollHeight, behavior: 'smooth'}) }, [m]);
+
+ useEffect(() => {
+   localStorage.setItem(key, JSON.stringify(m));
+   localStorage.setItem(key + '_step', step.toString());
+ }, [m, step, key]);
+
+ const req = CHAT_STEPS[lang][step] ? CHAT_STEPS[lang][step].req : [];
+
+  const send = (phraseChip, catIdx) => {
+    const fullSentence = CHAT_SENTENCES[phraseChip] || phraseChip;
+    setM(x => [...x, {t: fullSentence, user: true}]);
+
+    if (req.includes(catIdx)) {
+      if (step < CHAT_STEPS[lang].length) {
+        setTimeout(() => {
+          setM(x => [...x, {b: 1, t: CHAT_STEPS[lang][step].nextBot}]);
+          setStep(step + 1);
+        }, 800);
+      }
+    } else {
+      setTimeout(() => {
+        const hint = req.map(i => CATS[i][lang]).join(' or ');
+        setM(x => [...x, {b: 1, t: `${t.chatHint}${hint}`}]);
+      }, 800);
+    }
+  };
+
+ const reset = () => {
+   setM(INIT_CHAT[lang]);
+   setStep(0);
+   localStorage.removeItem(key);
+   localStorage.removeItem(key + '_step');
+ };
+
+ return html`<div>
+   <div className="tip">
+     <span>🤖 ${t.chatGoal}</span>
+     <button className="btn t" style=${{padding:'4px 10px',fontSize:12,border:'1px solid #dbe3f1'}} onClick=${reset}>${t.resetChat}</button>
+   </div>
+   <div className="glass" style=${{marginBottom:14}}>
+     <div className="chat" ref=${box} aria-live="polite">
+       ${m.map((x,k)=>html`<${motion.div} key=${k} className=${'bb '+(x.b?'bot':'me')} initial=${{opacity:0,y:10,scale:.95}} animate=${{opacity:1,y:0,scale:1}}>${x.t}<//>`)}
+     </div>
+   </div>
+   <div className="glass cc">
+     <div className="ph" style=${{marginBottom:12}}>
+       ${CATS.map((c,k)=>html`<button key=${k} className=${'cp '+(ci==k?'on':'')} onClick=${()=>setCi(k)}>${c[lang]}</button>`)}
+     </div>
+     <div className="ph">
+       ${CATS[ci].list.split(';').map(p=>html`<${motion.button} key=${p} className="pp cl" whileHover=${{y:-3}} whileTap=${{scale:.94}} onClick=${()=>send(p, ci)}>${p}<//>`)}
+     </div>
+   </div>
+ </div>`;
+}
+
+function Express({rows,lang}){
+ const t = L[lang];
+ const pick=()=>rows[Math.floor(Math.random()*rows.length)];
+ const [v,setV]=useState(pick),[a,setA]=useState(''),[b,setB]=useState(''),[st,setSt]=useState(null),[sc,setSc]=useState([0,0]);
+ const eq=(x,y)=>y.split('/').some(z=>norm(z)==norm(x));
+ const ck=()=>{if(st)return;const g=eq(a,v[1])&&eq(b,v[2]);setSt(g?'ok':'no');setSc([sc[0]+(g?1:0),sc[1]+1])};
+ const nx=()=>{setV(pick());setA('');setB('');setSt(null)};
+ const anim=st=='ok'?{y:[0,-16,0,-8,0],transition:{duration:.6}}:st=='no'?{x:[0,-10,10,-8,8,-4,0],transition:{duration:.45}}:{x:0,y:0};
+ const inp=(val,set,ph)=>html`<${motion.input} className=${'t '+(st=='ok'?'tok':st=='no'?'tno':'')} placeholder=${ph} value=${val} animate=${anim} onChange=${e=>!st&&set(e.target.value)} onKeyDown=${e=>e.key=='Enter'&&(st?nx():ck())}/>`;
+ return html`<div className="glass cc"><h3>⚡ ${t.verbExpress}</h3><p className="ps" style=${{marginBottom:10}}>${t.score}${sc[0]} / ${sc[1]}</p><div className="q" style=${{marginBottom:12}}>${v[0]} <small style=${{color:'#64748b'}}>(${v[3]})</small></div>${inp(a,setA,'Past Simple')}${inp(b,setB,'Past Participle')}${st=='no'&&html`<p style=${{fontWeight:800,color:'#dc2626',marginTop:-8}}>${t.correctAnswer}${v[1]} · ${v[2]}</p>`}${st=='ok'&&html`<p style=${{fontWeight:800,color:'#16a34a',marginTop:-8}}>✅ ${t.correct}</p>`}<${motion.button} className=${'btn '+(st=='ok'?'g':st=='no'?'n':'')} whileHover=${{scale:1.04}} whileTap=${{scale:.95}} onClick=${st?nx:ck}>${st?t.next+' →':t.check}<//></div>`}
+
+function Verbs({go,lang}){
+ const t = L[lang];
+ const rows=useMemo(()=>VB.split(';').map(x=>x.split('=')),[]);
+ const [f,setF]=useState(''),[ok,setOk]=useState(()=>{try{return JSON.parse(localStorage.getItem(VERBS_KEY))||[]}catch(e){return[]}});
+ const tg=v=>{const n=ok.includes(v)?ok.filter(x=>x!=v):[...ok,v];setOk(n);try{localStorage.setItem(VERBS_KEY,JSON.stringify(n))}catch(e){}};
+ const list=rows.filter(r=>r.join(' ').toLowerCase().includes(f.trim().toLowerCase())),ii=U.findIndex(u=>u.id=='irr');
+ return html`<div className="vg"><div className="glass cc"><input className="sr" placeholder=${t.searchVerb} value=${f} onChange=${e=>setF(e.target.value)} aria-label="Search verb"/><div style=${{maxHeight:460,overflow:'auto'}}><table className="vt"><thead><tr><th>✓</th><th>Infinitive</th><th>Past Simple</th><th>Participle</th><th>Translation</th></tr></thead><tbody>${list.map(r=>html`<tr key=${r[0]} style=${{opacity:ok.includes(r[0])?.55:1}}><td><input type="checkbox" checked=${ok.includes(r[0])} onChange=${()=>tg(r[0])} title="Learned"/></td>${r.map((c,i)=>html`<td key=${i}>${c}</td>`)}</tr>`)}</tbody></table></div><p className="ps" style=${{margin:'12px 0 10px'}}>${t.learned}${ok.length}${t.of}${rows.length}</p><${motion.button} className="btn" whileHover=${{scale:1.05}} whileTap=${{scale:.95}} onClick=${()=>go('intro',ii)}>${t.trainPast}<//></div><${Express} rows=${rows} lang=${lang}/></div>`}
+
+function Role({lang}){
+ const t = L[lang];
+ const [p,setP]=useState(0),[sel,setSel]=useState(null),[sc,setSc]=useState(0);
+ const ph=PH[lang][p],opts=useMemo(()=>p<PH[lang].length?sh([ph[2][2][1],...RP[lang][p][1]]):[],[p,lang]);
+ if(p>=PH[lang].length)return html`<div className="glass cc" style=${{textAlign:'center'}}><div className="stars">🎭</div><div className="big">${sc}/${PH[lang].length}</div><p>${sc==PH[lang].length?t.roleExcellent:t.roleTryAgain}</p><button className="btn" onClick=${()=>{setP(0);setSel(null);setSc(0)}}>${t.playAgain}</button></div>`;
+ const ok=sel&&sel==ph[2][2][1];
+ return html`<div className="glass cc"><h3>${ph[0]}</h3><p className="ps" style=${{marginBottom:12}}>${t.roleGoal}${ph[1]}</p>
+ <div style=${{display:'flex',flexDirection:'column',gap:8,marginBottom:14}}>${ph[2].slice(0,2).map(([w,x])=>html`<div key=${w} className="bb bot"><small style=${{color:'#64748b'}}>Student ${w}</small><br/>${x}</div>`)}</div>
+ <p style=${{fontWeight:800,color:'#4f8cff',margin:'0 0 10px'}}>${RP[lang][p][0]}</p>
+ <div className="opts">${opts.map(o=>html`<${motion.button} key=${o} className=${'opt '+(sel?(o==ph[2][2][1]?'good':o==sel?'bad':''):'')} whileHover=${{scale:1.01}} whileTap=${{scale:.98}} onClick=${()=>{if(!sel){setSel(o);if(o==ph[2][2][1])setSc(s=>s+1)}}}>${o}<//>`)}</div>
+ ${sel&&html`<${motion.div} initial=${{opacity:0,y:10}} animate=${{opacity:1,y:0}}><p style=${{fontWeight:700}}>${ok?'✅ ':'❌ '}${RP[lang][p][2]}</p><button className="btn" onClick=${()=>{setP(p+1);setSel(null)}}>${p+1<PH[lang].length?t.nextBtn+' →':t.resultBtn}</button><//>`}</div>`}
+
+function PQ({lang}){
+ const t = L[lang];
+ const pick=()=>{const c=CATS[Math.floor(Math.random()*CATS.length)],ps=c.list.split(';');return{p:ps[Math.floor(Math.random()*ps.length)],c:c[lang]}};
+ const [q,setQ]=useState(pick),[a,setA]=useState(null),[sc,setSc]=useState([0,0]);
+ const ans=n=>{if(a)return;setA(n);setSc([sc[0]+(n==q.c?1:0),sc[1]+1])};
+ return html`<div className="glass cc"><div className="ps">${t.whichCategory}${sc[0]} / ${sc[1]}</div><div className="q">${q.p}</div><div className="opts">${CATS.map((c)=>html`<${motion.button} key=${c[lang]} className=${'opt '+(a?(c[lang]==q.c?'good':c[lang]==a?'bad':''):'')} whileHover=${{scale:1.02}} whileTap=${{scale:.97}} onClick=${()=>ans(c[lang])}>${c[lang]}<//>`)}</div>${a&&html`<${motion.div} initial=${{opacity:0,y:10}} animate=${{opacity:1,y:0}}><p style=${{fontWeight:800}}>${a==q.c?'✅ '+t.correct:'❌ '+t.correctAnswer+q.c}</p><button className="btn" onClick=${()=>{setQ(pick());setA(null)}}>${t.next} →</button><//>`}</div>`}
+
+function Phrases({lang}){
+ const t = L[lang];
+ const [tab,setTab]=useState('a');
+ const subs=[['a','🤖 '+t.tabAiChat],['c','💬 '+t.tabChecklist],['d','🎭 '+t.tabRoleplay],['t','🎯 '+t.tabTraining]];
+ const C=()=>html`<div>${CATS.map((c,k)=>html`<${motion.div} key=${k} className="glass cc" initial=${{opacity:0,y:20}} animate=${{opacity:1,y:0}} transition=${{delay:k*.06}}><h3>${c[lang]}</h3><div className="ph">${c.list.split(';').map(p=>html`<span key=${p} className="pp">${p}</span>`)}</div><//>`)}</div>`;
+ const V=tab=='a'?Chat:tab=='c'?C:tab=='d'?Role:PQ;
+ return html`<div><div className="tabs">${subs.map(([k,n])=>html`<button key=${k} className=${'tab '+(tab==k?'on':'')} onClick=${()=>setTab(k)}>${tab==k&&html`<${motion.span} layoutId="phTab" className="pill" transition=${{type:'spring',stiffness:380,damping:30}}/>`}<span className="tl">${n}</span></button>`)}</div><${AnimatePresence} mode="wait"><${motion.div} key=${tab} ...${fade} transition=${{duration:.25}}><${V} lang=${lang}/><//><//></div>`}
+
+const RL=[
+{id:'be',g:'Present Simple',i:'🙋',t:'Verb to be',s:[
+  {h:{ru:'Формы глагола',en:'Forms'},p:{ru:'Глагол be в настоящем времени меняется по лицам. В английском он обязателен: «Я студент» = I am a student.',en:'The verb "be" changes by person in the present tense. In English, it is mandatory: "Я студент" = I am a student.'},ex:['I am (I’m) Dave. — Я Дэйв.','He / She / It is (’s) from the UK. — Он / она / оно из Великобритании.','We / You / They are (’re) friends. — Мы / вы / они друзья.']},
+  {h:{ru:'Отрицание',en:'Negative'},p:{ru:'Добавляем not после глагола. Краткие формы: isn’t, aren’t. С I используется только I’m not.',en:'Add "not" after the verb. Short forms: isn’t, aren’t. With "I", only "I’m not" is used.'},ex:['I’m not a student. — Я не студент.','Andrew isn’t from Italy. — Эндрю не из Италии.','They aren’t here. — Их здесь нет.']},
+  {h:{ru:'Вопросы и краткие ответы',en:'Questions & Short Answers'},p:{ru:'Глагол be ставим перед подлежащим. В кратком ответе повторяем be, а не основной глагол.',en:'Put "be" before the subject. In short answers, repeat "be", not the main verb.'},ex:['Are you a student? — Yes, I am. / No, I’m not.','Is it your name? — No, it isn’t.','Are we friends? — Yes, we are.']}
+]},
+{id:'this',g:'Present Simple',i:'👜',t:'This/that, possessives',s:[
+  {h:{ru:'This / that / these / those',en:'This / that / these / those'},p:{ru:'this и these — предметы рядом с нами, that и those — далеко. this и that — один предмет, these и those — несколько.',en:'this and these — objects near us, that and those — far away. this and that — one object, these and those — several objects.'},ex:['This is my pen. — Это моя ручка (рядом).','That is my bag. — Это моя сумка (вдали).','These are my keys. — Это мои ключи (рядом).','Those are windows. — Это окна (вдали).']},
+  {h:{ru:'Притяжательные слова',en:'Possessive adjectives'},p:{ru:'my, your, his, her, its, our, their ставятся перед существительным.',en:'my, your, his, her, its, our, their are placed before a noun.'},ex:['Is this your phone? — Это твой телефон?','Her name is Anya. — Её зовут Аня.']},
+  {h:{ru:'Mine / yours — без существительного',en:'Mine / yours (without noun)'},p:{ru:'Когда существительного нет, используем mine, yours, his, hers, ours, theirs.',en:'When there is no noun, we use mine, yours, his, hers, ours, theirs.'},ex:['This bag is mine. — Эта сумка моя.','It’s yours. — Это твоё.']},
+  {h:{ru:'Принадлежность с ’s',en:'Possessive ’s'},p:{ru:'Для людей добавляем ’s к владельцу: не «bag of my friend», а my friend’s bag.',en:'For people, we add ’s to the owner: not "bag of my friend", but my friend’s bag.'},ex:['That’s Sally’s bag. — Это сумка Салли.','It’s my friend’s mobile. — Это телефон моего друга.']}
+]},
+{id:'ps',g:'Present Simple',i:'📅',t:'Present Simple',s:[
+  {h:{ru:'Когда используем',en:'When to use'},p:{ru:'Для регулярных действий, привычек и фактов. Сигналы: every day, usually, on Fridays, at the weekend.',en:'For regular actions, habits, and facts. Signals: every day, usually, on Fridays, at the weekend.'},ex:['I get up at seven every day. — Я встаю в семь каждый день.']},
+  {h:{ru:'Утверждение',en:'Affirmative'},p:{ru:'I / you / we / they + глагол. He / she / it + глагол с -s. Особые случаи: -es после s, sh, ch, x, o (watches, goes); согласная + y → -ies (studies); have → has.',en:'I / you / we / they + verb. He / she / it + verb with -s. Special cases: -es after s, sh, ch, x, o (watches, goes); consonant + y → -ies (studies); have → has.'},ex:['We watch films in the evening. — Мы смотрим фильмы вечером.','She gets up at six. — Она встаёт в шесть.','He has a great job. — У него отличная работа.']},
+  {h:{ru:'Отрицание',en:'Negative'},p:{ru:'don’t (I, you, we, they) или doesn’t (he, she, it) + глагол без -s.',en:'don’t (I, you, we, they) or doesn’t (he, she, it) + verb without -s.'},ex:['I don’t eat junk food. — Я не ем фастфуд.','Alice doesn’t like flying. — Элис не любит летать.']},
+  {h:{ru:'Вопросы и краткие ответы',en:'Questions & Short Answers'},p:{ru:'Do или Does в начале. После does основной глагол без -s.',en:'Do or Does at the beginning. After does, the main verb is without -s.'},ex:['Do you study English? — Yes, I do.','Does she want to be a pilot? — No, she doesn’t.','What time does it start? — Во сколько это начинается?']}
+]},
+{id:'adv',g:'Present Simple',i:'⏱️',t:'Adverbs of frequency',s:[
+  {h:{ru:'Шкала частоты',en:'Frequency Scale'},p:{ru:'never (0%) → hardly ever → sometimes → often → usually → always (100%).',en:'never (0%) → hardly ever → sometimes → often → usually → always (100%).'},ex:['I always drink coffee. — Я всегда пью кофе.','We hardly ever see each other. — Мы почти никогда не видимся.']},
+  {h:{ru:'Где ставить наречие',en:'Where to place'},p:{ru:'После глагола be, но перед остальными глаголами.',en:'After the verb "be", but before other verbs.'},ex:['He is never late. — Он никогда не опаздывает.','We often play football. — Мы часто играем в футбол.']},
+  {h:{ru:'Выражения и предлоги',en:'Expressions & Prepositions'},p:{ru:'once a week, twice a year, three times a day. Предлоги: on Fridays, in June, at 7.30, at the weekend, in the morning.',en:'once a week, twice a year, three times a day. Prepositions: on Fridays, in June, at 7.30, at the weekend, in the morning.'},ex:['I go to the gym twice a week. — Я хожу в зал дважды в неделю.','My birthday is in June. — Мой день рождения в июне.']}
+]},
+{id:'hg',g:'Present Simple',i:'🏠',t:'Have got · There is/are',s:[
+  {h:{ru:'Have got',en:'Have got'},p:{ru:'I / you / we / they have got, he / she / it has got. Отрицание: haven’t / hasn’t got. Вопрос: Have you got…? Has he got…?',en:'I / you / we / they have got, he / she / it has got. Negative: haven’t / hasn’t got. Question: Have you got…? Has he got…?'},ex:['They have got sixteen children. — У них шестнадцать детей.','She hasn’t got a car. — У неё нет машины.','Has he got a job? — Yes, he has.']},
+  {h:{ru:'There is / there are',en:'There is / there are'},p:{ru:'There is — для одного предмета, there are — для нескольких. Отрицание: there isn’t / there aren’t. Вопрос: Is there…? Are there…?',en:'There is — for one object, there are — for several. Negative: there isn’t / there aren’t. Question: Is there…? Are there…?'},ex:['There is a desk in the room. — В комнате есть стол.','There are chairs and a table. — Есть стулья и стол.','Are there any buses at night? — Ночью есть автобусы?']},
+  {h:{ru:'Предлоги места',en:'Prepositions of place'},p:{ru:'in, on, under, above, behind, between, next to, near, opposite, in front of.',en:'in, on, under, above, behind, between, next to, near, opposite, in front of.'},ex:['The cat is in front of the dog. — Кошка перед собакой.','The lamp is between the sofa and the table. — Лампа между диваном и столом.']}
+]},
+{id:'pc',g:'Present Continuous',i:'🎬',t:'Present Continuous',s:[
+  {h:{ru:'Когда используем',en:'When to use'},p:{ru:'Действие происходит прямо сейчас или в этот период. Сигналы: now, at the moment, today, Look!, Listen!',en:'The action is happening right now or during this period. Signals: now, at the moment, today, Look!, Listen!'},ex:['Look! It’s raining. — Смотри! Идёт дождь.']},
+  {h:{ru:'Как образуется',en:'How to form'},p:{ru:'am / is / are + глагол с -ing.',en:'am / is / are + verb with -ing.'},ex:['I am reading a book now. — Я сейчас читаю книгу.','They are playing football. — Они играют в футбол.']},
+  {h:{ru:'Правописание -ing',en:'Spelling -ing'},p:{ru:'Убираем немое -e (have → having). Удваиваем согласную в коротких словах (run → running, swim → swimming).',en:'Drop the silent -e (have → having). Double the consonant in short words (run → running, swim → swimming).'},ex:['We are running in the park. — Мы бежим в парке.','He is having a coffee. — Он пьёт кофе.']},
+  {h:{ru:'Отрицание и вопросы',en:'Negative & Questions'},p:{ru:'Отрицание: isn’t / aren’t / I’m not + -ing. Вопрос: am / is / are перед подлежащим.',en:'Negative: isn’t / aren’t / I’m not + -ing. Question: am / is / are before the subject.'},ex:['She isn’t sleeping. — Она не спит.','What are you doing? — Что ты делаешь?']},
+  {h:{ru:'Simple или Continuous?',en:'Simple vs Continuous'},p:{ru:'Present Simple — регулярно, Present Continuous — сейчас. Глаголы like, know, want обычно не используются в Continuous.',en:'Present Simple — regularly, Present Continuous — right now. Verbs like, know, want are usually not used in Continuous.'},ex:['I get up at 7 every day. — Я встаю в 7 каждый день.','I’m having breakfast now. — Я завтракаю сейчас.']}
+]},
+{id:'wr',g:'Past Simple',i:'🕰️',t:'Was / were',s:[
+  {h:{ru:'Формы',en:'Forms'},p:{ru:'I / he / she / it — was. We / you / they — were.',en:'I / he / she / it — was. We / you / they — were.'},ex:['I was at home last night. — Я был дома вчера вечером.','Her parents were very poor. — Её родители были очень бедны.']},
+  {h:{ru:'Отрицание и вопросы',en:'Negative & Questions'},p:{ru:'wasn’t / weren’t. В вопросе was / were идёт перед подлежащим.',en:'wasn’t / weren’t. In questions, was / were goes before the subject.'},ex:['She wasn’t shy. — Она не была застенчивой.','Were you born in this country? — Yes, I was.']},
+  {h:{ru:'Слова-сигналы',en:'Signal words'},p:{ru:'yesterday, last night / week / year, in 2015, a week ago, on Saturday.',en:'yesterday, last night / week / year, in 2015, a week ago, on Saturday.'},ex:['We were in Paris yesterday. — Вчера мы были в Париже.']}
+]},
+{id:'pst',g:'Past Simple',i:'⏪',t:'Past Simple',s:[
+  {h:{ru:'Правильные глаголы',en:'Regular verbs'},p:{ru:'Добавляем -ed: work → worked. Если глагол оканчивается на -e, добавляем -d (love → loved). Согласная + y → -ied (study → studied). Короткие глаголы удваивают согласную (stop → stopped).',en:'Add -ed: work → worked. If the verb ends in -e, add -d (love → loved). Consonant + y → -ied (study → studied). Short verbs double the consonant (stop → stopped).'},ex:['Samiya started university at fifteen. — Самия поступила в университет в пятнадцать.','She loved her village. — Она любила свою деревню.']},
+  {h:{ru:'Произношение -ed',en:'Pronunciation -ed'},p:{ru:'/t/ — finished, worked. /d/ — moved, loved. /ɪd/ — started, wanted (после t и d).',en:'/t/ — finished, worked. /d/ — moved, loved. /ɪd/ — started, wanted (after t and d).'},ex:['I wanted to see a film. — Я хотел посмотреть фильм.']},
+  {h:{ru:'Неправильные глаголы',en:'Irregular verbs'},p:{ru:'Форма не подчиняется правилу, её нужно знать: go → went, buy → bought, have → had. Полный список смотри во вкладке «Глаголы».',en:'The form doesn\'t follow the rule, you need to know it: go → went, buy → bought, have → had. See the full list in the "Verbs" tab.'},ex:['Lidia became a model. — Лидия стала моделью.','He bought a new phone. — Он купил новый телефон.']},
+  {h:{ru:'Отрицание и вопросы',en:'Negative & Questions'},p:{ru:'didn’t + глагол в начальной форме. Did + подлежащее + глагол в начальной форме. Отвечаем Yes, I did. / No, I didn’t.',en:'didn’t + base verb. Did + subject + base verb. Answer Yes, I did. / No, I didn’t.'},ex:['I didn’t have a car. — У меня не было машины.','Did she go to university? — Yes, she did.']},
+  {h:{ru:'Слова-сигналы',en:'Signal words'},p:{ru:'yesterday, last week, in 1999, two days ago, on Saturday.',en:'yesterday, last week, in 1999, two days ago, on Saturday.'},ex:['We went to the museum last Sunday. — В прошлое воскресенье мы ходили в музей.']}
+]},
+{id:'irr',g:'Past Simple',i:'🔥',t:'Irregular verbs',s:[
+  {h:{ru:'Три формы',en:'Three forms'},p:{ru:'У неправильного глагола три формы: инфинитив, Past Simple, Past Participle (3-я форма). В Past Simple берём вторую.',en:'An irregular verb has three forms: infinitive, Past Simple, Past Participle (3rd form). For Past Simple, we take the second.'},ex:['go — went — gone','see — saw — seen']},
+  {h:{ru:'Все формы одинаковые',en:'All forms are the same'},p:{ru:'Эти глаголы не меняются совсем.',en:'These verbs don\'t change at all.'},ex:['cost — cost — cost','cut — cut — cut','read — read — read (произносится /red/)']},
+  {h:{ru:'Группы по похожести',en:'Similarity groups'},p:{ru:'Так проще запоминать: buy — bought, catch — caught, fight — fought (-ought / -aught). build — built, spend — spent, feel — felt (-t).',en:'It\'s easier to remember this way: buy — bought, catch — caught, fight — fought (-ought / -aught). build — built, spend — spent, feel — felt (-t).'},ex:['I bought a ticket. — Я купил билет.','She felt tired. — Она чувствовала усталость.']}
+]}
+];
+
+function Rules({go,lang}){
+ const t = L[lang];
+ const [id,setId]=useState('be'),r=RL.find(x=>x.id==id),ui=U.findIndex(u=>u.id==id);
+ return html`<div>
+   <div className="rules-header">
+     <div className="rules-title">
+       <h2>${t.nav.rules}</h2>
+       <p>${t.rulesSub}</p>
+     </div>
+     <button className="iconbtn no-print" onClick=${printRules}>🖨 Print Cheat Sheet ↗</button>
+   </div>
+
+   <div className="rl">
+     <div className="rn">
+       ${['Present Simple','Present Continuous','Past Simple'].map(g=>html`<div key=${g} className="rg">
+         <div className="gh">${g}</div>
+         ${RL.filter(x=>x.g==g).map(x=>html`<button key=${x.id} className=${'rb '+(id==x.id?'on':'')} onClick=${()=>setId(x.id)}>
+           ${id==x.id&&html`<${motion.span} layoutId="ruleTab" className="rbp" transition=${{type:'spring',stiffness:380,damping:30}}/>`}
+           <span className="rbt">${x.i} ${x.t}</span>
+         </button>`)}
+       </div>`)}
+     </div>
+     
+     <${AnimatePresence} mode="wait">
+       <${motion.div} key=${id} className="rc-container" initial=${{opacity:0, y:15}} animate=${{opacity:1, y:0}} exit=${{opacity:0, y:-15}} transition=${{duration:0.25}}>
+         <div className="rc-title">
+           <span>${r.i}</span> ${r.t}
+         </div>
+         
+         ${r.s.map((sec,k)=>html`<div key=${k} className="rs">
+           <div className="rh"><b>${k+1}</b>${sec.h[lang]}</div>
+           <p>${sec.p[lang]}</p>
+           ${sec.ex.map(e=>{
+             const parts = e.split(' — ');
+             const en = parts[0];
+             const ru = parts.length > 1 ? parts.slice(1).join(' — ') : '';
+             return html`<div key=${e} className="rx">
+               <span>${en}</span>
+               ${ru && html`<i>${ru}</i>`}
+             </div>`
+           })}
+         </div>`)}
+         
+         <div style=${{marginTop:30, paddingTop:20, borderTop:'1px solid #f1f5f9'}}>
+           <${motion.button} className="btn" whileHover=${{scale:1.03}} whileTap=${{scale:.97}} onClick=${()=>go('intro',ui)}>${t.train} →<//>
+         </div>
+       <//>
+     <//>
+   </div>
+ </div>`}
+
+const TEAM = {
+  ru: [
+    { name: 'Герасимов Дмитрий', initials: 'ГД', role: 'Руководитель проекта и разработчик', desc: 'Поставил задачи, собрал структуру сайта, определил дизайн и логику тренажёра, проверял и дорабатывал результат.', tags: ['React', 'UI/UX', 'Логика', 'Архитектура'], gradient: 'linear-gradient(135deg,#4f8cff,#7c5cff)', imgKey: 'gd', isLead: true },
+    { name: 'Рыжков Роберт', initials: 'РР', role: 'Отвечал за учебный материал', desc: 'Отбирал слова, правила и примеры из контрольных точек и учебника, проверял точность тестов по грамматике.', tags: ['Грамматика', 'Лексика', 'Тесты'], gradient: 'linear-gradient(135deg,#f472b6,#fb923c)', imgKey: 'rr' },
+    { name: 'Коклягин Святослав', initials: 'КС', role: 'Отвечал за фразы и тестирование', desc: 'Подготовил фразы и диалоги для дискуссии, проверял работу всех разделов сайта и искал ошибки.', tags: ['QA', 'Диалоги', 'Контент'], gradient: 'linear-gradient(135deg,#22c55e,#14b8a6)', imgKey: 'ks' }
+  ],
+  en: [
+    { name: 'Dmitry Gerasimov', initials: 'DG', role: 'Project Lead & Developer', desc: 'Set tasks, built the site structure, defined the design and logic of the trainer, reviewed and refined the result.', tags: ['React', 'UI/UX', 'Logic', 'Architecture'], gradient: 'linear-gradient(135deg,#4f8cff,#7c5cff)', imgKey: 'gd', isLead: true },
+    { name: 'Robert Ryzhkov', initials: 'RR', role: 'Educational Content', desc: 'Selected words, rules, and examples from the control points and textbook, verified the accuracy of grammar tests.', tags: ['Grammar', 'Vocabulary', 'Tests'], gradient: 'linear-gradient(135deg,#f472b6,#fb923c)', imgKey: 'rr' },
+    { name: 'Svyatoslav Koklyagin', initials: 'SK', role: 'Phrases & Testing', desc: 'Prepared phrases and dialogues for the discussion, tested all sections of the site and looked for bugs.', tags: ['QA', 'Dialogues', 'Content'], gradient: 'linear-gradient(135deg,#22c55e,#14b8a6)', imgKey: 'ks' }
+  ]
+};
+
+function About({lang}){
+ const t = L[lang], team = TEAM[lang];
+ return html`<footer className="ab"><${motion.div} initial=${{opacity:0,y:30}} whileInView=${{opacity:1,y:0}} viewport=${{once:true}} transition=${{duration:.6}}>
+ <div className="h2" style=${{marginTop:80}}>${t.aboutTitle}</div>
+ <p className="hp">${t.aboutSub}</p>
+ 
+ <div className="team-grid">
+   ${team.map((member,k)=>html`<${motion.div} key=${member.name} className=${'team-card ' + (member.isLead ? 'lead' : '')} initial=${{opacity:0,y:20}} whileInView=${{opacity:1,y:0}} viewport=${{once:true}} transition=${{delay:k*.1}}>
+      <div className="team-photo-wrap">
+        ${IMG[member.imgKey] ? html`<img className="team-photo" src=${IMG[member.imgKey]} alt=${member.name} loading="lazy"/>` : html`<div className="team-photo" style=${{background:member.gradient,color:'#fff',display:'grid',placeItems:'center',fontSize:32,fontWeight:900}}>${member.initials}</div>`}
+      </div>
+      <div className="team-info">
+        <h3>${member.name}</h3>
+        <div className="role">${member.role}</div>
+        <p>${member.desc}</p>
+        <div className="team-tags">
+          ${member.tags.map(tag=>html`<span className="team-tag">${tag}</span>`)}
+        </div>
+      </div>
+   <//>`)}
+ </div>
+
+ <div className="ai" style=${{marginTop:32}}>
+   ${IMG.ai ? html`<img className="av sm" src=${IMG.ai} alt="Claude"/>` : html`<div className="av sm" style=${{background:'linear-gradient(135deg,#a78bfa,#6366f1)'}}>🤖</div>`}
+   <p><b>Claude (Anthropic)</b> — AI assistant. Role: helped write and debug the site code upon Dmitry's request. Structure, educational material, solutions, and verification — by the project team.</p>
+ </div>
+ <p style=${{textAlign:'center',color:'#94a3b8',fontSize:14,marginTop:24}}>© 2026 · English Language Project, UTMN</p><//></footer>`}
+
+function Page({t,p,children}){return html`<div className="pg"><div className="pt">${t}</div><p className="ps">${p}</p>${children}</div>`}
+
+function Hero({nav,S,go,lang}){
+ const t = L[lang];
+ const W=t.heroTitle, F=[['went','went','left',8],['am reading','reading','right',12],['a library','library','left',42],['has got','has','right',48],['bought','bought','left',74],['Past Simple','Past','right',76]];
+ const done=S?Object.keys(S.d||{}).length:0;
+ const nextIdx=U.findIndex(u=>!S?.d[u.id]);
+ let ctaLabel=t.startPath,ctaAction=()=>nav('path');
+ if(done>0&&nextIdx>=0){ctaLabel=t.continuePath+U[nextIdx].t;ctaAction=()=>go('intro',nextIdx)}
+ else if(nextIdx===-1){ctaLabel=t.viewReport;ctaAction=()=>nav('report')}
+ return html`<section className="hero">${F.map((f,i)=>html`<${FlyCard} key=${i} f=${f} i=${i}/>`)}
+ <h1>${W.map((x,i)=>html`<${motion.span} key=${i} className=${i==2||i==4?'grad':''} initial=${{opacity:0,y:36,rotate:4}} animate=${{opacity:1,y:0,rotate:0}} transition=${{delay:i*.12,type:'spring',stiffness:120,damping:14}}>${x}${i<W.length-1?'\u00a0':''}<//>`)}</h1>
+ <${motion.p} className="sub" initial=${{opacity:0}} animate=${{opacity:1}} transition=${{delay:.8}}>${t.heroSub}<//>
+ <${motion.button} className="cta" initial=${{opacity:0,y:20}} animate=${{opacity:1,y:0}} transition=${{delay:1}} whileHover=${{y:-6,scale:1.06,transition:{type:'spring',stiffness:320,damping:14}}} whileTap=${{scale:.96}} onClick=${ctaAction}>${ctaLabel} <${ArrowRight} size=${22} style=${{verticalAlign:'-4px',marginLeft:6}}/><//>
+ <div><button className="link" onClick=${()=>nav('play')}>${t.tryMini}</button></div></section>`}
+
+const FW=[['went','went'],['bought','bought'],['am reading','reading'],['has got','has'],['a library','library'],['Past Simple','Past'],['was / were','was/were'],['took','took'],['is playing','playing'],['has got','has'],['a kitchen','kitchen'],['was','was'],['usually','usually'],['saw','saw'],['are running','running'],['often','often'],['there is','there is'],['wrote','wrote'],['a pharmacy','pharmacy'],['talkative','talkative'],['in front of','in front of'],['don’t eat','don\'t eat'],['a waiter','waiter'],['between','between']];
+function FlyCard({f,i}){
+ const sub=FW.filter((_,k)=>k%6==i),[k,setK]=useState(0);
+ useEffect(()=>{const id=setInterval(()=>setK(x=>(x+1)%sub.length),4200+i*650);return()=>clearInterval(id)},[]);
+ const w=sub[k];
+ return html`<${motion.div} className="fl glass" style=${{[f[2]]:0,top:f[3]+'%'}} initial=${{opacity:0,scale:.7}} animate=${{opacity:1,scale:1,y:[0,-14,0]}} transition=${{opacity:{delay:.5+i*.15},scale:{delay:.5+i*.15},y:{duration:3.5+i*.7,repeat:Infinity,ease:'easeInOut',delay:i*.9}}}><${AnimatePresence} mode="wait"><${motion.div} key=${w[0]+k} initial=${{opacity:0,y:8}} animate=${{opacity:1,y:0}} exit=${{opacity:0,y:-8}} transition=${{duration:.3}}><b>${w[0]}</b><small>${w[1]}</small><//><//><//>`}
+
+function Bento({lang}){
+ const t = L[lang];
+ const nv=U.filter(u=>u.g=='Present Simple').length,C=[['s2','🙋','Present Simple',nv+' lessons: to be, this/that, adverbs, have got, there is/are'],['','🎬','Present Continuous','am / is / are + V-ing'],['','⏪','Past Simple','was/were and -ed'],['s2','🔥','36 Irregular Verbs','be — was/were, buy — bought, take — took from the test'],['s2','📚','Vocabulary','6 thematic sets: countries, home, family, food, jobs, time'],['s4','💬','Discussion Phrases','AI Chat, 6 categories, roleplay dialogue, and topics']];
+ return html`<div className="bento">${C.map((c,i)=>html`<${motion.div} key=${i} className=${c[0]} initial=${{opacity:0,y:34}} whileInView=${{opacity:1,y:0}} viewport=${{once:true}} transition=${{delay:(i%3)*.08,duration:.6}}><${motion.div} className="glass bc" whileHover=${{y:-6,boxShadow:'0 26px 54px '+BC[i]}} transition=${spring}><div className="e">${c[1]}</div><h3>${c[2]}</h3><p>${c[3]}</p><//><//>`)}
+ <${motion.div} className="s4" initial=${{opacity:0,y:34}} whileInView=${{opacity:1,y:0}} viewport=${{once:true}}><div className="glass bc"><div className="stp"><span>📖 Rule</span><i>→</i><span>✍️ Test</span><i>→</i><span>✅ Result</span><i>→</i><span>🔓 New Topic</span></div></div><//></div>`}
+
+function Dash({S,go,save,nav,lang}){
+ const t = L[lang];
+ const [tab,setTab]=useState('p');
+ const done=Object.keys(S.d).length,tot=U.length,pc=Math.round(done/tot*100);
+ const tabs=[['p','🎯 '+t.tabProgress],['g','📚 '+t.tabGrammar],['v','🧠 '+t.tabVocabulary]];
+ const reset=()=>{if(!confirm('Reset all progress, errors, and learned verbs?'))return;try{localStorage.removeItem(VERBS_KEY);localStorage.removeItem(ERRORS_KEY)}catch(e){}save({d:{},xp:0,open:S.open})};
+ const Prog=()=>html`<div className="pc"><h2>Hi! 👋</h2><p>${t.passed} ${done} ${t.ofLessons} ${tot} ${t.lessons}</p><div className="glow"><${motion.div} initial=${{width:0}} animate=${{width:pc+'%'}} transition=${{duration:1.2,delay:.2,ease:'easeOut'}}/></div>
+ <div className="sts"><div className="st"><b>${pc}%</b>${t.course}</div><div className="st"><b>${done}</b>${t.done}</div><div className="st"><b>${tot-done}</b>${t.left}</div></div>
+ <div className="rings">${['Present Simple','Present Continuous','Past Simple'].map(g=>{const a=U.filter(u=>u.g==g),d=a.filter(u=>S.d[u.id]).length,p=Math.round(d/a.length*100);return html`<div key=${g} className="ringcard"><div className="ring" style=${{'--pct':p+'%'}}><b>${p}%</b></div><small>${g}</small><div style=${{fontSize:12,color:'var(--mut)'}}>${d}/${a.length} ${t.lessons}</div></div>`})}</div>
+ <div style=${{display:'flex',gap:10,flexWrap:'wrap',marginBottom:14}}>
+  <button className="btn t" style=${{border:'2px solid #dbe3f1'}} onClick=${()=>nav('verbs')}>🔥 ${t.verbs}</button>
+  <button className="btn t" style=${{border:'2px solid #dbe3f1'}} onClick=${()=>nav('play')}>🎴 ${t.practice}</button>
+  <button className="btn t" style=${{border:'2px solid #dbe3f1'}} onClick=${()=>save({...S,open:!S.open})}>${S.open?'🔒 '+t.lockLessons:'🔓 '+t.unlockAll}</button>
+  <button className="btn t" style=${{border:'2px solid #dbe3f1'}} onClick=${reset}>↺ ${t.resetProgress}</button>
+ </div>
+ <button className="btn t" style=${{marginRight:8,border:'1px solid #dbe3f1'}} onClick=${printRules}>${t.saveCheat}</button>
+ <${motion.button} className=${'btn '+((done<tot&&!S.open)?'t':'g')} disabled=${(done<tot&&!S.open)} whileHover=${(done<tot&&!S.open)?{}:{scale:1.04}} onClick=${()=>go('quiz',-1)}>${(done<tot&&!S.open)?'🔒 '+t.testLocked:'🏆 '+t.finalTest}<//></div>`;
+ const Gram=()=>html`<div>${['Present Simple','Present Continuous','Past Simple'].map(g=>html`<div key=${g}><div className="gh">${g}</div><div className="gg">${U.map((u,i)=>[u,i]).filter(([u])=>u.g==g).map(([u,i],k)=>{const lk=!S.open&&i>0&&!S.d[U[i-1].id],st=S.d[u.id]||0;
+  return html`<${motion.button} key=${u.id} className=${'lc '+(lk?'lk':st?'dn':'')} disabled=${lk} onClick=${()=>go('intro',i)} initial=${{opacity:0,y:20}} animate=${{opacity:1,y:0}} transition=${{delay:k*.07}} whileHover=${lk?{}:{y:-6,scale:1.03}} whileTap=${lk?{}:{scale:.97}}>${lk&&html`<${Lock} className="lock" size=${20}/>`}<span className="em">${u.i}</span><h4>${u.t}</h4><small>${lk?t.locked:st?'✓ '+t.completed:t.start}</small><//>`})}</div></div>`)}</div>`;
+ const Vocab=()=>html`<div>${U.map((u,i)=>[u,i]).filter(([u])=>u.v).map(([u,i],k)=>html`<${motion.div} key=${u.id} className="vc" initial=${{opacity:0,y:18}} animate=${{opacity:1,y:0}} transition=${{delay:k*.07}}><h4>${u.i} ${u.t}</h4><div className="wl">${u.v.split(';').map(x=>x.split('=')).map(([e,r])=>html`<span key=${e} className="wd"><b>${e}</b><i>${r}</i></span>`)}</div><${motion.button} className="btn" whileHover=${{scale:1.05}} whileTap=${{scale:.95}} onClick=${()=>go('intro',i)}>${t.train}<//><//>`)}</div>`;
+ const V=tab=='p'?Prog:tab=='g'?Gram:Vocab;
+ return html`<div className="glass dash"><div className="tabs">${tabs.map(([k,n])=>html`<button key=${k} className=${'tab '+(tab==k?'on':'')} onClick=${()=>setTab(k)}>${tab==k&&html`<${motion.span} layoutId="activeTab" className="pill" transition=${{type:'spring',stiffness:380,damping:30}}/>`}<span className="tl">${n}</span></button>`)}</div>
+ <${AnimatePresence} mode="wait"><${motion.div} key=${tab} initial=${{opacity:0}} animate=${{opacity:1}} exit=${{opacity:0}} transition=${{duration:.25}}><${V}/><//><//></div>`}
+
+function printRules(){
+ const w=window.open('','_blank','width=900,height=700');if(!w)return;
+ const body=RL.map(r=>`<section><h2>${r.i} ${r.t}</h2><p class="meta">${r.g}</p>${r.s.map(x=>`<article><h3>${x.h.en}</h3><p>${x.p.en}</p>${x.ex.map(e=>`<p class="ex">${e}</p>`).join('')}</article>`).join('')}</section>`).join('');
+ w.document.write(`<!doctype html><html lang="en"><meta charset="utf-8"><title>English Project — Rules</title><style>body{font:15px/1.55 Arial,sans-serif;color:#1e293b;max-width:850px;margin:35px auto;padding:0 24px}h1{color:#2563eb}h2{border-bottom:2px solid #dbeafe;padding-bottom:7px;margin-top:32px}h3{margin-bottom:4px;color:#334155}article{break-inside:avoid;margin:16px 0}.meta{color:#64748b}.ex{background:#f1f6ff;padding:7px 10px;border-radius:7px;margin:5px 0}@media print{body{margin:0 auto}}</style><h1>English Project — Grammar Cheat Sheet</h1><p>All course rules in one document.</p>${body}<script>window.onload=()=>window.print()<\/script></html>`);w.document.close();
+}
+
+function Quiz({i,S,save,go,lang}){
+ const t = L[lang];
+ const qs=useMemo(()=>i<0?sh(U.flatMap(u=>build(u))).slice(0,20):build(U[i]),[i]);
+ const [n,setN]=useState(0),[err,setErr]=useState(0),[sel,setSel]=useState(null),[val,setVal]=useState(''),[res,setRes]=useState(null),[wr,setWr]=useState([]);
+ const q=qs[n];
+ const canCheck=q.o?!!sel:!!val.trim();
+ const check=()=>{if(res!==null)return;const v=q.o?sel:val;if(!v||!v.trim())return;const ok=q.a.split('|').some(a=>norm(a)==norm(v));setRes(ok);if(!ok){setErr(e=>e+1);setWr(w=>[...w,{q:q.q,a:q.a.split('|')[0]}]);try{const a=JSON.parse(localStorage.getItem(ERRORS_KEY)||'[]');a.unshift({q:q.q,a:q.a.split('|')[0],topic:i>=0?U[i].t:'Final Test'});localStorage.setItem(ERRORS_KEY,JSON.stringify(a.slice(0,100)))}catch(e){}}};
+ const next=()=>{if(n+1<qs.length){setN(n+1);setSel(null);setVal('');setRes(null);return}
+  const tot=qs.length,s=err==0?3:err<=tot*.25?2:err<=tot*.5?1:0,xp=(tot-err)*5,d={...S.d};if(i>=0&&s>0)d[U[i].id]=Math.max(d[U[i].id]||0,s);save({...S,d,xp:(S.xp||0)+xp});go('res',i,{err,tot,s2:s,xp,wr})};
+ useEffect(()=>{const h=e=>{const tg=e.target;if(e.key!='Enter'||tg.tagName=='INPUT'||(tg.tagName=='BUTTON'&&!tg.classList.contains('opt')))return;e.preventDefault();res===null?check():next()};addEventListener('keydown',h);return()=>removeEventListener('keydown',h)});
+ return html`<div className="wrap qcard"><div className="top"><button className="x" onClick=${()=>go('home',0,{back:1})} aria-label="Close test">✕</button><div className="glow"><${motion.div} animate=${{width:((n+(res!==null?1:0))/qs.length*100)+'%'}} transition=${{duration:.5}}/></div></div>
+ <${AnimatePresence} mode="wait"><${motion.div} key=${n} initial=${{opacity:0,x:40}} animate=${{opacity:1,x:0}} exit=${{opacity:0,x:-40}} transition=${{duration:.25}}>
+ <div className="q" dangerouslySetInnerHTML=${{__html:q.q}}></div>
+ ${q.o?html`<div className="opts">${q.o.map(o=>html`<${motion.button} key=${o} className=${'opt '+(sel==o?'sel':'')} whileHover=${{scale:1.02}} whileTap=${{scale:.97}} onClick=${()=>res===null&&setSel(o)}>${o}<//>`)}</div>`:html`<input className="t" autoFocus autoComplete="off" autoCapitalize="off" placeholder=${t.typeAnswer} value=${val} onChange=${e=>res===null&&setVal(e.target.value)} onKeyDown=${e=>e.key=='Enter'&&(res===null?check():next())}/>`}
+ <//><//>
+ ${res===null&&html`<button className="btn w" onClick=${check} disabled=${!canCheck}>${t.check}</button>`}
+ <${AnimatePresence}>${res!==null&&html`<${motion.div} key="fb" className=${'fb '+(res?'ok':'no')} initial=${{y:120}} animate=${{y:0}} exit=${{y:120}} transition=${{type:'spring',stiffness:260,damping:24}} role="status" aria-live="polite"><div><b>${res?'✅ '+t.correct:'❌ '+t.correctAns+q.a.split('|')[0]}</b><button className=${'btn w '+(res?'g':'n')} onClick=${next}>${t.next}</button></div><//>`}<//></div>`}
+
+function Res({r,S,go,nav,lang}){
+ const t = L[lang];
+ return html`<div style=${{position:'relative'}}>${r.s2>0&&html`<${Confetti}/>`}<div className="glass card" style=${{textAlign:'center'}}><div className="stars">${r.s2>0?'🎉':'📖'}</div><div className="big">${r.tot-r.err}/${r.tot}</div><p>${r.s2>0?t.resGood:t.resBad}</p></div>
+  ${r.wr&&r.wr.length>0&&html`<div className="glass card" style=${{marginTop:0}}><h3 style=${{marginTop:0}}>${t.workOn}</h3>${r.wr.map((w,k)=>html`<div key=${k} className="ln"><span dangerouslySetInnerHTML=${{__html:w.q}}/> → <b style=${{color:'#16a34a'}}>${w.a}</b></div>`)}</div>`}
+  <div className="wrap" style=${{marginTop:0}}>${r.s2>0&&r.i>=0&&r.i<U.length-1&&html`<button className="btn g w" onClick=${()=>go('intro',r.i+1)}>${t.nextLesson} →</button>`}<br/><br/><button className="btn w" onClick=${()=>go('quiz',r.i)}>${t.tryAgain}</button><br/><br/><button className="btn w t" onClick=${()=>go('home',0,{back:1})}>${t.backToPath}</button><br/><br/><button className="btn w" onClick=${()=>nav('report')}>${t.viewProgress}</button></div></div>`}
+
+const ERROR_BANK=[
+ ['She go to school every day.','She goes to school every day.'],['I am play football now.','I am playing football now.'],['They was at home yesterday.','They were at home yesterday.'],['He don’t like coffee.','He doesn’t like coffee.'],['Did you went to the cinema?','Did you go to the cinema?'],['We are usually get up at seven.','We usually get up at seven.'],['There is two books on the table.','There are two books on the table.'],['She have got a new phone.','She has got a new phone.'],['I didn’t saw him yesterday.','I didn’t see him yesterday.'],['Look! It rains now.','Look! It is raining now.'],['My parents was very kind.','My parents were very kind.'],['He study English on Mondays.','He studies English on Mondays.']
+];
+function Blitz({lang}){
+ const t = L[lang];
+ const all=useMemo(()=>sh(U.filter(u=>u.q).flatMap(u=>u.q.map(q=>({...q,topic:u.t})))),[]);
+ const [left,setLeft]=useState(60),[run,setRun]=useState(false),[q,setQ]=useState(()=>all[0]),[v,setV]=useState(''),[score,setScore]=useState(0),[count,setCount]=useState(0),[finished,setFinished]=useState(false);
+ useEffect(()=>{if(!run||finished)return;const id=setInterval(()=>setLeft(x=>{if(x<=1){setRun(false);setFinished(true);return 0}return x-1}),1000);return()=>clearInterval(id)},[run,finished]);
+ const next=()=>{setQ(all[Math.floor(Math.random()*all.length)]);setV('')};
+ const answer=()=>{if(!run||finished||!v.trim())return;const ok=q.a.split('|').some(x=>norm(x)==norm(v));setCount(x=>x+1);if(ok)setScore(x=>x+1);else{try{const a=JSON.parse(localStorage.getItem(ERRORS_KEY)||'[]');a.unshift({q:q.q,a:q.a.split('|')[0],topic:q.topic});localStorage.setItem(ERRORS_KEY,JSON.stringify(a.slice(0,100)))}catch(e){}}next()};
+ const start=()=>{setLeft(60);setScore(0);setCount(0);setFinished(false);setQ(all[Math.floor(Math.random()*all.length)]);setV('');setRun(true)};
+ return html`<div className="glass toolpanel"><div style=${{display:'flex',justifyContent:'space-between',alignItems:'center'}}><h3 style=${{margin:0}}>⚡ ${t.timeBlitz}</h3><b style=${{color:left<15?'#ef4444':'#4f8cff',fontSize:22}}>${left}${t.sec}</b></div>
+ ${!run&&!finished?html`<p className="ps">${t.blitzDesc}</p><button className="btn" onClick=${start}>${t.startBlitz}</button>`:finished?html`<div style=${{textAlign:'center',padding:16}}><div className="big">${score}/${count}</div><p>${t.correct}</p><button className="btn" onClick=${start}>${t.playAgain}</button></div>`:html`<p className="ps">${q.topic}${t.scoreStr}${score} / ${count}</p><div className="q" dangerouslySetInnerHTML=${{__html:q.q}}/><input className="t" autoFocus placeholder=${t.yourAnswer} value=${v} onChange=${e=>setV(e.target.value)} onKeyDown=${e=>e.key==='Enter'&&answer()}/><button className="btn" style=${{marginTop:10}} onClick=${answer}>${t.answer}</button>`}</div>`}
+
+function ErrorReview({lang}){
+ const t = L[lang];
+ const [items,setItems]=useState(()=>{try{return JSON.parse(localStorage.getItem(ERRORS_KEY)||'[]')}catch(e){return[]}}),[n,setN]=useState(0),[show,setShow]=useState(false);
+ const clear=()=>{localStorage.removeItem(ERRORS_KEY);setItems([]);setN(0);setShow(false)};
+ if(!items.length)return html`<div className="glass toolpanel"><h3>🧠 ${t.errorReview}</h3><p>${t.noErrors}</p></div>`;
+ const x=items[n%items.length];
+ return html`<div className="glass toolpanel"><div style=${{display:'flex',justifyContent:'space-between',gap:8}}><h3 style=${{marginTop:0}}>🧠 ${t.errorReview}</h3><small>${n+1} / ${items.length}</small></div><div className="q" dangerouslySetInnerHTML=${{__html:x.q}}/><button className="btn" onClick=${()=>setShow(!show)}>${show?t.hideAnswer:t.showAnswer}</button>${show&&html`<div className="r" style=${{marginTop:12}}><b>${x.a}</b><small style=${{display:'block',color:'var(--mut)'}}>${x.topic||'Review'}</small></div>`}<div style=${{display:'flex',gap:8,marginTop:14,flexWrap:'wrap'}}><button className="btn t" onClick=${()=>{setN((n+1)%items.length);setShow(false)}}>${t.nextError} →</button><button className="btn t" onClick=${clear}>${t.clearList}</button></div></div>`}
+
+function FindMistake({lang}){
+ const t = L[lang];
+ const [i,setI]=useState(0),[ans,setAns]=useState(null),[score,setScore]=useState(0);
+ const q=ERROR_BANK[i%ERROR_BANK.length];
+ const opts=useMemo(()=>sh([q[1],...sh(ERROR_BANK.filter((x,k)=>k!=i%ERROR_BANK.length)).slice(0,3).map(x=>x[1])]),[i]);
+ return html`<div className="glass toolpanel"><h3 style=${{marginTop:0}}>🔎 ${t.findMistake}</h3><p className="ps">${t.findMistakeDesc}${score}</p><div className="q">${q[0]}</div>${opts.map(o=>html`<button key=${o} className=${'choice '+(ans?(o===q[1]?'good':o===ans?'bad':''):'')} onClick=${()=>{if(ans)return;setAns(o);if(o===q[1])setScore(x=>x+1)}}>${o}</button>`)}${ans&&html`<div style=${{display:'flex',gap:8,marginTop:10,flexWrap:'wrap'}}><button className="btn" onClick=${()=>{setI(i+1);setAns(null)}}>${t.next} →</button><button className="btn t" onClick=${()=>{setI(0);setAns(null);setScore(0)}}>${t.restart}</button></div>`}</div>`}
+
+function MatchPairs({lang}){
+ const t = L[lang];
+ const make=()=>sh(WORDS).slice(0,6).map((x,i)=>({id:i,en:x[0],ru:x[1]}));
+ const [pairs,setPairs]=useState(make),[left,setLeft]=useState(null),[right,setRight]=useState(null),[done,setDone]=useState([]),[moves,setMoves]=useState(0);
+ const R=useMemo(()=>sh(pairs.map(x=>({id:x.id,text:x.ru}))),[pairs]);
+ useEffect(()=>{if(left===null||right===null)return;setMoves(x=>x+1);if(left===right)setDone(x=>[...x,left]);setLeft(null);setRight(null)},[left,right]);
+ const reset=()=>{setPairs(make());setDone([]);setLeft(null);setRight(null);setMoves(0)};
+ return html`<div className="glass toolpanel"><h3 style=${{marginTop:0}}>🧩 ${t.matchPairs}</h3><p className="ps">${t.matchPairsDesc}${done.length}${t.found}${pairs.length}${t.moves}${moves}</p><div className="pairgrid"><div>${pairs.map(x=>html`<button key=${x.id} className=${'pairbtn '+(done.includes(x.id)?'done':left===x.id?'sel':'')} disabled=${done.includes(x.id)} onClick=${()=>setLeft(x.id)}>${x.en}</button>`)}</div><div>${R.map(x=>html`<button key=${x.id} className=${'pairbtn '+(done.includes(x.id)?'done':right===x.id?'sel':'')} disabled=${done.includes(x.id)} onClick=${()=>setRight(x.id)}>${x.text}</button>`)}</div></div>${done.length===pairs.length&&html`<p style=${{color:'#16a34a',fontWeight:900}}>${t.allPairs}</p>`}<button className="btn t" style=${{marginTop:12}} onClick=${reset}>${t.newSet}</button></div>`}
+
+function Tools({lang}){
+ const t = L[lang];
+ const [tab,setTab]=useState('blitz');
+ const tabs=[['blitz','⚡ '+t.toolBlitz],['errors','🧠 '+t.toolErrors],['find','🔎 '+t.toolFind],['pairs','🧩 '+t.toolPairs]];
+ const V=tab==='blitz'?Blitz:tab==='errors'?ErrorReview:tab==='find'?FindMistake:MatchPairs;
+ return html`<div><div className="tabs" style=${{width:'100%',justifyContent:'center',flexWrap:'wrap'}}>${tabs.map(([k,n])=>html`<button key=${k} className=${'tab '+(tab===k?'on':'')} onClick=${()=>setTab(k)}>${tab===k&&html`<${motion.span} layoutId="toolsTab" className="pill"/>`}<span className="tl">${n}</span></button>`)}</div><${AnimatePresence} mode="wait"><${motion.div} key=${tab} ...${fade}><${V} lang=${lang}/><//><//></div>`}
+
+function Report({S,lang}){
+ const t = L[lang];
+ const done=Object.keys(S.d||{}).length,total=U.length;
+ const errs=(()=>{try{return JSON.parse(localStorage.getItem(ERRORS_KEY)||'[]')}catch(e){return[]}})();
+ const groups=['Present Simple','Present Continuous','Past Simple'];
+ const rings=groups.map(g=>{const a=U.filter(u=>u.g===g),d=a.filter(u=>S.d[u.id]).length;return{g,p:Math.round(d/a.length*100),d,n:a.length}});
+ const strong=rings.filter(x=>x.p>=70),weak=rings.filter(x=>x.p<70);
+ return html`<div className="glass toolpanel"><div style=${{textAlign:'center'}}><div className="toolicon" style=${{margin:'0 auto',width:42,height:42,borderRadius:14,display:'grid',placeItems:'center',background:'#edf4ff',color:'#4f8cff'}}><${Trophy} size=${22}/></div><h2>${t.yourResults}</h2><p className="ps">${t.reportSummary}</p><div className="big">${Math.round(done/total*100)}%</div><p>${t.completedOf}${done}${t.ofLessons}${total}${t.lessons}${t.scoreStr}${S.xp||0} XP</p></div>
+ <div className="rings">${rings.map(x=>html`<div key=${x.g} className="ringcard"><div className="ring" style=${{'--pct':x.p+'%'}}><b>${x.p}%</b></div><small>${x.g}</small><div style=${{fontSize:12,color:'var(--mut)'}}>${x.d}/${x.n} ${t.lessons}</div></div>`)}</div>
+ <div className="sts"><div className="st"><b>${errs.length}</b>${t.errorsToReview}</div><div className="st"><b>${done}</b>${t.lessons}</div><div className="st"><b>${S.xp||0}</b>XP</div></div>
+ <h3>${t.strengths}</h3><p>${strong.length?strong.map(x=>x.g).join(', '):t.strengthsGood}</p>
+ <h3>${t.review}</h3><p>${weak.length?weak.map(x=>x.g).join(', '):t.reviewGood}</p>
+ <button className="btn" onClick=${()=>window.print()}>${t.printReport}</button></div>`}
+
+function Home({S,go,tab,nav,save,lang}){
+ const t = L[lang];
+ if(tab=='rules')return html`<${Rules} go=${go} lang=${lang}/>`;
+ if(tab=='path')return html`<${Page} t=${'🗺 ' + t.dashTitle} p=${t.dashSub}><${Dash} S=${S} go=${go} save=${save} nav=${nav} lang=${lang}/><//>`;
+ if(tab=='play')return html`<${Page} t=${'🎮 ' + t.practice} p=${t.practiceSub}><${Practice} lang=${lang}/><//>`;
+ if(tab=='tools')return html`<${Page} t=${'🎮 ' + t.tools} p=${t.toolsSub}><${Tools} lang=${lang}/><//>`;
+ if(tab=='report')return html`<${Page} t=${'🏆 ' + t.report} p=${t.reportSub}><${Report} S=${S} lang=${lang}/><//>`;
+ if(tab=='phr')return html`<${Page} t=${'💬 ' + t.phrases} p=${t.phrasesSub}><${Phrases} lang=${lang}/><//>`;
+ if(tab=='verbs')return html`<${Page} t=${'🔥 ' + t.verbs} p=${t.verbsSub}><${Verbs} go=${go} lang=${lang}/><//>`;
+ return html`<div><${Hero} nav=${nav} S=${S} go=${go} lang=${lang}/><div className="h2">${t.bentoTitle}</div><p className="hp">${t.bentoSub}</p><${Bento} lang=${lang}/><${About} lang=${lang}/></div>`}
+
+function App(){
+ const [S,setS]=useState(load),[r,setR]=useState({s:'home'}),[tab,setTab]=useState('home');
+ const [lang,setLang]=useState(() => { try { return localStorage.getItem(LANG_KEY) || 'en'; } catch { return 'en'; } });
+
+ useEffect(() => { localStorage.setItem(LANG_KEY, lang); }, [lang]);
+
+ const save=n=>{const data=cleanProgress(n);setS(data);try{const raw=JSON.stringify(data);localStorage.setItem(PROGRESS_KEY,raw);localStorage.setItem(PROGRESS_BACKUP_KEY,raw)}catch(e){console.warn('Save failed:',e)}};
+ useEffect(()=>{let f=0,x=0,y=0;const m=e=>{x=e.clientX;y=e.clientY;if(!f)f=requestAnimationFrame(()=>{f=0;const s=document.documentElement.style;s.setProperty('--mx',x+'px');s.setProperty('--my',y+'px')})};addEventListener('mousemove',m,{passive:true});return()=>removeEventListener('mousemove',m)},[]);
+ const go=(s,i,x)=>{if(x&&x.back)setTab('path');setR({s,i,...x});scrollTo(0,0)};
+ const nav=t=>{setTab(t);setR({s:'home'});scrollTo(0,0)};
+ let c;
+ const t = L[lang];
+
+ if(r.s=='intro'){const u=U[r.i];c=html`<div><div className="glass card"><h2>${u.i} ${u.t}</h2>${u.rule?html`<div dangerouslySetInnerHTML=${{__html:u.rule}}/>`:html`<div className="r">Choose the correct translation. Words from your tests — repeat until automatic!</div>`}</div><div className="wrap" style=${{marginTop:0}}><button className="btn w" onClick=${()=>go('quiz',r.i)}>${t.startTest}</button><br/><br/><button className="btn w t" onClick=${()=>go('home',0,{back:1})}>${t.back}</button></div></div>`}
+ else if(r.s=='quiz')c=html`<${Quiz} key=${r.i} i=${r.i} S=${S} save=${save} go=${go} lang=${lang}/>`;
+ else if(r.s=='res')c=html`<${Res} r=${r} S=${S} go=${go} nav=${nav} lang=${lang}/>`;
+ else c=html`<${Home} S=${S} go=${go} tab=${tab} nav=${nav} save=${save} lang=${lang}/>`;
+ return html`<div><div className="spot"/><div className="blob" style=${{width:460,height:460,left:-120,top:60,background:'radial-gradient(circle,#bfdbff 0%,transparent 68%)'}}/><div className="blob" style=${{width:420,height:420,right:-100,top:140,background:'radial-gradient(circle,#ddd6fe 0%,transparent 68%)'}}/><div className="blob" style=${{width:420,height:420,left:'38%',bottom:-160,background:'radial-gradient(circle,#fbcfe8 0%,transparent 68%)'}}/>
+ <header>
+  <button className="logo" onClick=${()=>nav('home')} aria-label="Home"><${BookIc} size=${24} color="#4f8cff"/><span>English Project</span></button>
+  <nav className="nav">${Object.entries(t.nav).map(([k,n])=>{
+    const I=ICONS[{home:'Home',path:'Map',rules:'BookOpen',play:'Sparkles',tools:'Gamepad2',phr:'MessageSquare',verbs:'Flame',report:'Trophy'}[k]];
+    return html`<button key=${k} className=${'nv '+(tab==k?'on':'')} onClick=${()=>nav(k)}>${tab==k&&html`<${motion.span} layoutId="navTab" className="nvp" transition=${{type:'spring',stiffness:380,damping:30}}/>`}<span style=${{position:'relative',display:'inline-flex',alignItems:'center',gap:6}}><${I} size=${16}/>${n}</span></button>`
+  })}</nav>
+  <div className="header-actions">
+    <div className="lang-switch">
+      <button className=${'lang-btn '+(lang==='ru'?'on':'')} onClick=${()=>setLang('ru')}>RU</button>
+      <button className=${'lang-btn '+(lang==='en'?'on':'')} onClick=${()=>setLang('en')}>EN</button>
+    </div>
+    <span className="xp" title="Experience Points">⭐ ${S.xp||0}</span>
+  </div>
+ </header>
+ <main><${AnimatePresence} mode="wait"><${motion.div} key=${r.s+(r.i??'')+(r.s=='home'?tab:'')+lang} initial=${{opacity:0,y:14}} animate=${{opacity:1,y:0}} exit=${{opacity:0}} transition=${{duration:.3}}>${r.s=='home'?c:html`<div className="lv">${c}</div>`}<//><//></main>
+ <div className="bottomnav">${['home','path','rules','tools','verbs','phr','report'].map(k=>{
+    const I=ICONS[{home:'Home',path:'Map',rules:'BookOpen',tools:'Gamepad2',verbs:'Flame',phr:'MessageSquare',report:'Trophy'}[k]];
+    return html`<button key=${k} className=${tab===k?'on':''} onClick=${()=>nav(k)}><${I} size=${18}/>${t.nav[k]}</button>`
+  })}</div></div>`}
+const MC=MO&&MO.MotionConfig;
+ReactDOM.createRoot(document.getElementById('root')).render(MC?html`<${MC} reducedMotion="user"><${App}/><//>`:html`<${App}/>`);
+</script>
+</body>
+</html>
